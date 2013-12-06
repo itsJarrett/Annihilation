@@ -1,0 +1,61 @@
+maps:
+  test1:
+    spawns:
+      red:
+      - "0,0,0"
+      yellow:
+      - "0,0,0"
+      green:
+      - "0,0,0"
+      blue:
+      - "0,0,0"
+    nexuses:
+      red: 0,0,0
+      yellow: 0,0,0
+      green: 0,0,0
+      blue: 0,0,0
+  test2:
+    spawns:
+      red:
+      - "0,0,0"
+      yellow:
+      - "0,0,0"
+      green:
+      - "0,0,0"
+      blue:
+      - "0,0,0"
+    nexuses:
+      red: 0,0,0
+      yellow: 0,0,0
+      green: 0,0,0
+      blue: 0,0,0
+  test3:
+    spawns:
+      red:
+      - "0,0,0"
+      yellow:
+      - "0,0,0"
+      green:
+      - "0,0,0"
+      blue:
+      - "0,0,0"
+    nexuses:
+      red: 0,0,0
+      yellow: 0,0,0
+      green: 0,0,0
+      blue: 0,0,0
+  test4:
+    spawns:
+      red:
+      - "0,0,0"
+      yellow:
+      - "0,0,0"
+      green:
+      - "0,0,0"
+      blue:
+      - "0,0,0"
+    nexuses:
+      red: 0,0,0
+      yellow: 0,0,0
+      green: 0,0,0
+      blue: 0,0,0

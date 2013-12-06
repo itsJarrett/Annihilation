@@ -22,7 +22,7 @@ public class GameMap {
     private final Map<String, Location> nexusLocations = new HashMap<String, Location>();
 
     public GameMap(ConfigurationSection config) throws BadConfigException {
-	name = config.getCurrentPath();
+	name = config.getName();
 
 	WorldCreator wc = new WorldCreator(name);
 	wc.generator(new VoidGenerator());
@@ -54,10 +54,11 @@ public class GameMap {
 		if (loc != null)
 		    spawns.add(loc);
 	    }
-	    if (spawns.size() > 0)
+	    if (!spawns.isEmpty())
 		spawnPoints.put(team, spawns);
 	    else
-		throw new BadConfigException("Invalid configuration for " + team + " spawns");
+		throw new BadConfigException("Invalid configuration for "
+			+ team + " spawns");
 
 	    Location nexus = parseLocation(nexusConfig.getString(team));
 	    if (nexus != null)
@@ -88,7 +89,7 @@ public class GameMap {
     }
 
     private Location parseLocation(String s) {
-	String[] params = s.split("\\,");
+	String[] params = s.split(",");
 	if (params.length >= 3) {
 	    double x = Double.valueOf(params[0]);
 	    double y = Double.valueOf(params[1]);
@@ -101,7 +102,7 @@ public class GameMap {
     private Location parseSpawnLocation(String s) {
 	Location loc = parseLocation(s);
 	if (loc != null) {
-	    String[] params = s.split("\\,");
+	    String[] params = s.split(",");
 	    if (params.length >= 5) {
 		loc.setYaw(Float.valueOf(params[3]));
 		loc.setPitch(Float.valueOf(params[4]));

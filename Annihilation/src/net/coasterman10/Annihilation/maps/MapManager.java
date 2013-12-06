@@ -1,6 +1,9 @@
 package net.coasterman10.Annihilation.maps;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -17,15 +20,13 @@ public class MapManager {
     public MapManager(Logger log, ConfigurationSection config) {
 	this.log = log;
 	for (String name : config.getKeys(false)) {
-	    try
-	    {
+	    try {
 		GameMap map = new GameMap(config.getConfigurationSection(name));
 		maps.put(name, map);
-		    log.info("Added map " + name);
-	    }
-	    catch (BadConfigException e)
-	    {
-		log.warning("Could not add map " + name + " due to bad configuration");
+		log.info("Added map " + name);
+	    } catch (BadConfigException e) {
+		log.warning("Could not add map " + name
+			+ " due to bad configuration");
 		e.printStackTrace();
 	    }
 	}
@@ -56,5 +57,11 @@ public class MapManager {
 
     public Location getNexus(String team) {
 	return maps.get(currentMap).getNexusLocation(team);
+    }
+
+    public List<GameMap> getRandomMaps() {
+	List<GameMap> shuffledMaps = new LinkedList<GameMap>(maps.values());
+	Collections.shuffle(shuffledMaps);
+	return shuffledMaps.subList(0, Math.min(3, shuffledMaps.size()));
     }
 }
