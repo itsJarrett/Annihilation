@@ -2,13 +2,14 @@ package net.coasterman10.Annihilation;
 
 import net.coasterman10.Annihilation.bar.BarManager;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Annihilation extends JavaPlugin {
     public ConfigManager config;
     public BarManager bar;
 
-    private boolean ticking;
+    private boolean ticking = false;
     private int time = -120;
 
     @Override
@@ -19,13 +20,15 @@ public final class Annihilation extends JavaPlugin {
 	config.loadConfigFile("config.yml");
 
 	bar = new BarManager(this);
-	bar.setPercent(0F);
-	bar.setVisible(false);
+    }
+    
+    @Override
+    public void onDisable() {
+	
     }
 
     public void startTimer() {
 	ticking = true;
-	bar.setVisible(true);
 	SchedulerUtil.runRepeating(new Runnable() {
 	    public void run() {
 		onSecond();
@@ -45,9 +48,9 @@ public final class Annihilation extends JavaPlugin {
 	if (ticking) {
 	    time++;
 
-	    float percent = 100 * (120F + time) / 120F;
-	    bar.setPercent(percent);
-	    getServer().broadcastMessage("percent: " + percent);
+	    float percent = (120F + time) / 120F;
+	    for (Player p : getServer().getOnlinePlayers())
+		bar.setPercent(p, percent);
 
 	    if (time == 0)
 		startGame();

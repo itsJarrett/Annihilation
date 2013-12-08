@@ -25,7 +25,7 @@ public class Util {
 	FakeDragon fakeDragon = null;
 
 	try {
-	    fakeDragon = (FakeDragon) FakeDragon.class.getConstructor(
+	    fakeDragon = (FakeDragon) NMS_1_7.class.getConstructor(
 		    String.class, Location.class).newInstance(message, loc);
 	} catch (IllegalArgumentException e) {
 	    e.printStackTrace();

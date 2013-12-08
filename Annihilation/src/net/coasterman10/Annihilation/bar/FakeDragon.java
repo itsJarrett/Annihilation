@@ -1,300 +1,139 @@
 package net.coasterman10.Annihilation.bar;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import org.bukkit.Location;
 
-public class FakeDragon {
-    public static final int MAX_HEALTH = 200;
-    private int x;
-    private int y;
-    private int z;
+public abstract class FakeDragon {
+        public static final int MAX_HEALTH = 200;
+        private int x;
+        private int y;
+        private int z;
 
-    private int pitch = 0;
-    private int yaw = 0;
-    private byte xvel = 0;
-    private byte yvel = 0;
-    private byte zvel = 0;
-    public float health = 0;
-    private boolean visible = false;
-    public String name;
-    private Object world;
+        private int pitch = 0;
+        private int yaw = 0;
+        private byte xvel = 0;
+        private byte yvel = 0;
+        private byte zvel = 0;
+        public float health = 0;
+        private boolean visible = false;
+        public String name;
+        private Object world;
 
-    private Object dragon;
-    private int id;
+        public FakeDragon(String name, Location loc, int percent) {
+                this.name = name;
+                this.x = loc.getBlockX();
+                this.y = loc.getBlockY();
+                this.z = loc.getBlockZ();
+                this.health = percent / 100F * MAX_HEALTH;
+                this.world = Util.getHandle(loc.getWorld());
+        }
 
-    public FakeDragon(String name, Location loc) {
-	this.name = name;
-	this.x = loc.getBlockX();
-	this.y = loc.getBlockY();
-	this.z = loc.getBlockZ();
-	this.world = Util.getHandle(loc.getWorld());
-    }
+        public FakeDragon(String name, Location loc) {
+                this.name = name;
+                this.x = loc.getBlockX();
+                this.y = loc.getBlockY();
+                this.z = loc.getBlockZ();
+                this.world = Util.getHandle(loc.getWorld());
+        }
 
-    public int getX() {
-	return x;
-    }
+        public int getMaxHealth() {
+                return MAX_HEALTH;
+        }
 
-    public void setX(int x) {
-	this.x = x;
-    }
+        public void setHealth(int percent) {
+                this.health = percent / 100F * MAX_HEALTH;
+        }
 
-    public int getY() {
-	return y;
-    }
+        public void setName(String name) {
+                this.name = name;
+        }
 
-    public void setY(int y) {
-	this.y = y;
-    }
+        public int getX() {
+                return x;
+        }
 
-    public int getZ() {
-	return z;
-    }
+        public void setX(int x) {
+                this.x = x;
+        }
 
-    public void setZ(int z) {
-	this.z = z;
-    }
+        public int getY() {
+                return y;
+        }
 
-    public int getPitch() {
-	return pitch;
-    }
+        public void setY(int y) {
+                this.y = y;
+        }
 
-    public void setPitch(int pitch) {
-	this.pitch = pitch;
-    }
+        public int getZ() {
+                return z;
+        }
 
-    public int getYaw() {
-	return yaw;
-    }
+        public void setZ(int z) {
+                this.z = z;
+        }
 
-    public void setYaw(int yaw) {
-	this.yaw = yaw;
-    }
+        public int getPitch() {
+                return pitch;
+        }
 
-    public byte getXvel() {
-	return xvel;
-    }
+        public void setPitch(int pitch) {
+                this.pitch = pitch;
+        }
 
-    public void setXvel(byte xvel) {
-	this.xvel = xvel;
-    }
+        public int getYaw() {
+                return yaw;
+        }
 
-    public byte getYvel() {
-	return yvel;
-    }
+        public void setYaw(int yaw) {
+                this.yaw = yaw;
+        }
 
-    public void setYvel(byte yvel) {
-	this.yvel = yvel;
-    }
+        public byte getXvel() {
+                return xvel;
+        }
 
-    public byte getZvel() {
-	return zvel;
-    }
+        public void setXvel(byte xvel) {
+                this.xvel = xvel;
+        }
 
-    public void setZvel(byte zvel) {
-	this.zvel = zvel;
-    }
+        public byte getYvel() {
+                return yvel;
+        }
 
-    public boolean isVisible() {
-	return visible;
-    }
+        public void setYvel(byte yvel) {
+                this.yvel = yvel;
+        }
 
-    public void setVisible(boolean visible) {
-	this.visible = visible;
-    }
+        public byte getZvel() {
+                return zvel;
+        }
 
-    public Object getWorld() {
-	return world;
-    }
+        public void setZvel(byte zvel) {
+                this.zvel = zvel;
+        }
 
-    public void setWorld(Object world) {
-	this.world = world;
-    }
+        public boolean isVisible() {
+                return visible;
+        }
 
-    public Object getSpawnPacket() {
-	Class<?> Entity = Util.getCraftClass("Entity");
-	Class<?> EntityLiving = Util.getCraftClass("EntityLiving");
-	Class<?> EntityEnderDragon = Util.getCraftClass("EntityEnderDragon");
-	Object packet = null;
-	try {
-	    dragon = EntityEnderDragon.getConstructor(
-		    Util.getCraftClass("World")).newInstance(getWorld());
+        public void setVisible(boolean visible) {
+                this.visible = visible;
+        }
 
-	    Method setLocation = Util.getMethod(EntityEnderDragon,
-		    "setLocation", new Class<?>[] { double.class, double.class,
-			    double.class, float.class, float.class });
-	    setLocation.invoke(dragon, getX(), getY(), getZ(), getPitch(),
-		    getYaw());
+        public Object getWorld() {
+                return world;
+        }
 
-	    Method setInvisible = Util.getMethod(EntityEnderDragon,
-		    "setInvisible", new Class<?>[] { boolean.class });
-	    setInvisible.invoke(dragon, isVisible());
+        public void setWorld(Object world) {
+                this.world = world;
+        }
 
-	    Method setCustomName = Util.getMethod(EntityEnderDragon,
-		    "setCustomName", new Class<?>[] { String.class });
-	    setCustomName.invoke(dragon, name);
+        public abstract Object getSpawnPacket();
 
-	    Method setHealth = Util.getMethod(EntityEnderDragon, "setHealth",
-		    new Class<?>[] { float.class });
-	    setHealth.invoke(dragon, health);
+        public abstract Object getDestroyPacket();
 
-	    Field motX = Util.getField(Entity, "motX");
-	    motX.set(dragon, getXvel());
+        public abstract Object getMetaPacket(Object watcher);
 
-	    Field motY = Util.getField(Entity, "motX");
-	    motY.set(dragon, getYvel());
+        public abstract Object getTeleportPacket(Location loc);
 
-	    Field motZ = Util.getField(Entity, "motX");
-	    motZ.set(dragon, getZvel());
-
-	    Method getId = Util.getMethod(EntityEnderDragon, "getId",
-		    new Class<?>[] {});
-	    this.id = (Integer) getId.invoke(dragon);
-
-	    Class<?> PacketPlayOutSpawnEntityLiving = Util
-		    .getCraftClass("PacketPlayOutSpawnEntityLiving");
-
-	    packet = PacketPlayOutSpawnEntityLiving.getConstructor(
-		    new Class<?>[] { EntityLiving }).newInstance(dragon);
-	} catch (IllegalArgumentException e) {
-	    e.printStackTrace();
-	} catch (SecurityException e) {
-	    e.printStackTrace();
-	} catch (InstantiationException e) {
-	    e.printStackTrace();
-	} catch (IllegalAccessException e) {
-	    e.printStackTrace();
-	} catch (InvocationTargetException e) {
-	    e.printStackTrace();
-	} catch (NoSuchMethodException e) {
-	    e.printStackTrace();
-	}
-
-	return packet;
-    }
-
-    public Object getDestroyPacket() {
-	Class<?> PacketPlayOutEntityDestroy = Util
-		.getCraftClass("PacketPlayOutEntityDestroy");
-
-	Object packet = null;
-	try {
-	    packet = PacketPlayOutEntityDestroy.newInstance();
-	    Field a = PacketPlayOutEntityDestroy.getDeclaredField("a");
-	    a.setAccessible(true);
-	    a.set(packet, new int[] { id });
-	} catch (SecurityException e) {
-	    e.printStackTrace();
-	} catch (NoSuchFieldException e) {
-	    e.printStackTrace();
-	} catch (InstantiationException e) {
-	    e.printStackTrace();
-	} catch (IllegalAccessException e) {
-	    e.printStackTrace();
-	} catch (IllegalArgumentException e) {
-	    e.printStackTrace();
-	}
-
-	return packet;
-    }
-
-    public Object getMetaPacket(Object watcher) {
-	Class<?> DataWatcher = Util.getCraftClass("DataWatcher");
-
-	Class<?> PacketPlayOutEntityMetadata = Util
-		.getCraftClass("PacketPlayOutEntityMetadata");
-
-	Object packet = null;
-	try {
-	    packet = PacketPlayOutEntityMetadata.getConstructor(
-		    new Class<?>[] { int.class, DataWatcher, boolean.class })
-		    .newInstance(id, watcher, true);
-	} catch (IllegalArgumentException e) {
-	    e.printStackTrace();
-	} catch (SecurityException e) {
-	    e.printStackTrace();
-	} catch (InstantiationException e) {
-	    e.printStackTrace();
-	} catch (IllegalAccessException e) {
-	    e.printStackTrace();
-	} catch (InvocationTargetException e) {
-	    e.printStackTrace();
-	} catch (NoSuchMethodException e) {
-	    e.printStackTrace();
-	}
-
-	return packet;
-    }
-
-    public Object getTeleportPacket(Location loc) {
-	Class<?> PacketPlayOutEntityTeleport = Util
-		.getCraftClass("PacketPlayOutEntityTeleport");
-
-	Object packet = null;
-
-	try {
-	    packet = PacketPlayOutEntityTeleport.getConstructor(
-		    new Class<?>[] { int.class, int.class, int.class,
-			    int.class, byte.class, byte.class }).newInstance(
-		    this.id, loc.getBlockX() * 32, loc.getBlockY() * 32,
-		    loc.getBlockZ() * 32,
-		    (byte) ((int) loc.getYaw() * 256 / 360),
-		    (byte) ((int) loc.getPitch() * 256 / 360));
-	} catch (IllegalArgumentException e) {
-	    e.printStackTrace();
-	} catch (SecurityException e) {
-	    e.printStackTrace();
-	} catch (InstantiationException e) {
-	    e.printStackTrace();
-	} catch (IllegalAccessException e) {
-	    e.printStackTrace();
-	} catch (InvocationTargetException e) {
-	    e.printStackTrace();
-	} catch (NoSuchMethodException e) {
-	    e.printStackTrace();
-	}
-
-	return packet;
-    }
-
-    public Object getWatcher() {
-	Class<?> Entity = Util.getCraftClass("Entity");
-	Class<?> DataWatcher = Util.getCraftClass("DataWatcher");
-
-	Object watcher = null;
-	try {
-	    watcher = DataWatcher.getConstructor(new Class<?>[] { Entity })
-		    .newInstance(dragon);
-	    Method a = Util.getMethod(DataWatcher, "a", new Class<?>[] {
-		    int.class, Object.class });
-
-	    a.invoke(watcher, 0, isVisible() ? (byte) 0 : (byte) 0x20);
-	    a.invoke(watcher, 6, (Float) health);
-	    a.invoke(watcher, 7, (Integer) 0);
-	    a.invoke(watcher, 8, (Byte) (byte) 0);
-	    a.invoke(watcher, 10, name);
-	    a.invoke(watcher, 11, (Byte) (byte) 1);
-	} catch (IllegalArgumentException e) {
-
-	    e.printStackTrace();
-	} catch (SecurityException e) {
-
-	    e.printStackTrace();
-	} catch (InstantiationException e) {
-
-	    e.printStackTrace();
-	} catch (IllegalAccessException e) {
-
-	    e.printStackTrace();
-	} catch (InvocationTargetException e) {
-
-	    e.printStackTrace();
-	} catch (NoSuchMethodException e) {
-
-	    e.printStackTrace();
-	}
-	return watcher;
-    }
+        public abstract Object getWatcher();
 }
