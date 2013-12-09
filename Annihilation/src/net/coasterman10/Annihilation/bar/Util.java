@@ -1,7 +1,6 @@
 package net.coasterman10.Annihilation.bar;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.bukkit.Bukkit;
@@ -25,19 +24,9 @@ public class Util {
 	FakeDragon fakeDragon = null;
 
 	try {
-	    fakeDragon = (FakeDragon) NMS_1_7.class.getConstructor(
-		    String.class, Location.class).newInstance(message, loc);
-	} catch (IllegalArgumentException e) {
-	    e.printStackTrace();
-	} catch (SecurityException e) {
-	    e.printStackTrace();
-	} catch (InstantiationException e) {
-	    e.printStackTrace();
-	} catch (IllegalAccessException e) {
-	    e.printStackTrace();
-	} catch (InvocationTargetException e) {
-	    e.printStackTrace();
-	} catch (NoSuchMethodException e) {
+	    fakeDragon = FakeDragon.class.getConstructor(String.class,
+		    Location.class).newInstance(message, loc);
+	} catch (Exception e) {
 	    e.printStackTrace();
 	}
 
@@ -51,15 +40,7 @@ public class Util {
 	    Object con = con_field.get(nmsPlayer);
 	    Method packet_method = getMethod(con.getClass(), "sendPacket");
 	    packet_method.invoke(con, packet);
-	} catch (SecurityException e) {
-	    e.printStackTrace();
-	} catch (IllegalArgumentException e) {
-	    e.printStackTrace();
-	} catch (IllegalAccessException e) {
-	    e.printStackTrace();
-	} catch (InvocationTargetException e) {
-	    e.printStackTrace();
-	} catch (NoSuchFieldException e) {
+	} catch (Exception e) {
 	    e.printStackTrace();
 	}
     }
@@ -80,13 +61,10 @@ public class Util {
 	Method entity_getHandle = getMethod(world.getClass(), "getHandle");
 	try {
 	    nms_entity = entity_getHandle.invoke(world);
-	} catch (IllegalArgumentException e) {
-	    e.printStackTrace();
-	} catch (IllegalAccessException e) {
-	    e.printStackTrace();
-	} catch (InvocationTargetException e) {
+	} catch (Exception e) {
 	    e.printStackTrace();
 	}
+
 	return nms_entity;
     }
 
@@ -95,11 +73,7 @@ public class Util {
 	Method entity_getHandle = getMethod(entity.getClass(), "getHandle");
 	try {
 	    nms_entity = entity_getHandle.invoke(entity);
-	} catch (IllegalArgumentException e) {
-	    e.printStackTrace();
-	} catch (IllegalAccessException e) {
-	    e.printStackTrace();
-	} catch (InvocationTargetException e) {
+	} catch (Exception e) {
 	    e.printStackTrace();
 	}
 	return nms_entity;
@@ -109,9 +83,7 @@ public class Util {
 	try {
 	    Field field = cl.getDeclaredField(field_name);
 	    return field;
-	} catch (SecurityException e) {
-	    e.printStackTrace();
-	} catch (NoSuchFieldException e) {
+	} catch (Exception e) {
 	    e.printStackTrace();
 	}
 	return null;
@@ -157,7 +129,7 @@ public class Util {
 		break;
 	    }
 	}
-
+	
 	return equal;
     }
 
