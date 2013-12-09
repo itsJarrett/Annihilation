@@ -4,65 +4,34 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Random;
 
-import net.coasterman10.Annihilation.Annihilation;
+import net.coasterman10.Annihilation.ScoreboardUtil;
 
-import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
-import org.bukkit.scoreboard.Scoreboard;
 
 public class VotingManager {
-    private final Scoreboard board;
+    private final String boardName = "voting";
     private final HashMap<String, Integer> votes = new HashMap<String, Integer>();
-    private int time = 120;
-    private int taskID;
 
     public VotingManager(MapManager mapManager) {
-	board = Bukkit.getScoreboardManager().getNewScoreboard();
-	Objective o = board.registerNewObjective("votes", "dummy");
-	o.setDisplaySlot(DisplaySlot.SIDEBAR);
 	for (GameMap map : mapManager.getRandomMaps()) {
 	    votes.put(map.getName(), 0);
 	    updateVotes(map.getName());
 	}
-	for (Player p : Bukkit.getOnlinePlayers()) {
-	    p.setScoreboard(board);
-	}
+	ScoreboardUtil.setTitle(boardName, ChatColor.DARK_AQUA + ""
+		+ ChatColor.BOLD + "Voting");
+	setCurrentForPlayers(Bukkit.getOnlinePlayers());
     }
 
     public void setCurrentForPlayers(Player... players) {
 	for (Player p : players)
-	    p.setScoreboard(board);
-    }
-
-    public void startTimer(final Annihilation plugin) {
-	final Objective o = board.getObjective("votes");
-	final String prefix = ChatColor.DARK_PURPLE + "" + ChatColor.BOLD;
-	o.setDisplaySlot(DisplaySlot.SIDEBAR);
-	o.setDisplayName(prefix + "Starting in " + time);
-	taskID = plugin.getServer().getScheduler()
-		.scheduleSyncRepeatingTask(plugin, new Runnable() {
-		    public void run() {
-			time--;
-			o.setDisplayName(prefix + "Starting in " + time);
-			if (time == 0) {
-			    plugin.startGame();
-			    plugin.getServer().getScheduler()
-				    .cancelTask(taskID);
-			}
-		    }
-		}, 20L, 20L);
+	    ScoreboardUtil.setBoard(p, boardName);
     }
 
     public void updateVotes(String map) {
 	if (votes.containsKey(map)) {
-	    Score s = board.getObjective("votes").getScore(
-		    Bukkit.getOfflinePlayer(WordUtils.capitalize(map)));
-	    s.setScore(votes.get(map));
+	    ScoreboardUtil.setScore(boardName, map, votes.get(map));
 	}
     }
 
@@ -77,7 +46,7 @@ public class VotingManager {
 
     public boolean unvote(String map) {
 	if (votes.containsKey(map)) {
-	    votes.put(map, votes.get(map) + 1);
+	    votes.put(map, votes.get(map) - 1);
 	    updateVotes(map);
 	    return true;
 	}
@@ -97,5 +66,9 @@ public class VotingManager {
 	    }
 	}
 	return winner;
+    }
+    
+    public void end() {
+	ScoreboardUtil.clear(boardName);
     }
 }
