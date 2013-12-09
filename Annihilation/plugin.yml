@@ -1,3 +1,9 @@
 name: Annihilation
 main: net.coasterman10.Annihilation.Annihilation
 version: 1.0
+commands:
+  annihilation:
+    description: Plugin commands for Annihilation
+    aliases: anni
+  unlock:
+    description: Unlocks your locked chest
