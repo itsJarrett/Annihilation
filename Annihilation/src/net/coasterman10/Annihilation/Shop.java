@@ -1,11 +1,12 @@
 package net.coasterman10.Annihilation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,6 +15,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class Shop implements Listener {
     private static class ShopItem {
@@ -38,7 +40,12 @@ public class Shop implements Listener {
 	public ItemStack getShopStack() {
 	    ItemStack stack = item.clone();
 	    String priceStr = ChatColor.GOLD.toString() + price + " Gold";
-	    stack.getItemMeta().getLore().add(priceStr);
+	    ItemMeta meta = stack.getItemMeta();
+	    if (meta.hasLore())
+		meta.getLore().add(priceStr);
+	    else
+		meta.setLore(Arrays.asList(priceStr));
+	    stack.setItemMeta(meta);
 	    return stack;
 	}
 
@@ -48,6 +55,25 @@ public class Shop implements Listener {
 
 	public int getPrice() {
 	    return price;
+	}
+
+	public String getName() {
+	    String name;
+	    ItemMeta meta = item.getItemMeta();
+	    if (meta.hasDisplayName()) {
+		name = meta.getDisplayName();
+	    } else {
+		name = item.getType().name();
+		name = name.replace("_", " ").toLowerCase();
+		name = WordUtils.capitalize(name);
+		name += ChatColor.WHITE; // In case it's a wand
+	    }
+	    if (item.getAmount() > 1)
+		name += " x" + item.getAmount();
+	    
+	    // Fix the brewing stand name
+	    name = name.replace(" Item", "");
+	    return name;
 	}
     }
 
@@ -79,7 +105,7 @@ public class Shop implements Listener {
 	    addWeapon(new ShopItem(Material.MELON, 16, 5));
 	    addWeapon(new ShopItem(Material.CAKE, 5));
 
-	    addBrewing(new ShopItem(Material.BREWING_STAND, 10));
+	    addBrewing(new ShopItem(Material.BREWING_STAND_ITEM, 10));
 	    addBrewing(new ShopItem(Material.GLASS_BOTTLE, 3, 1));
 	    addBrewing(new ShopItem(Material.NETHER_WARTS, 5));
 	    nextRow(brewingShopItems);
@@ -127,9 +153,12 @@ public class Shop implements Listener {
     @EventHandler
     public void onSignClick(PlayerInteractEvent e) {
 	if (e.getClickedBlock() != null) {
-	    Block clicked = e.getClickedBlock();
-	    if (clicked instanceof Sign) {
-		if (isShopSign((Sign) clicked)) {
+	    Material type = e.getClickedBlock().getType();
+	    if (type == Material.WALL_SIGN || type == Material.SIGN_POST) {
+		Sign sign = (Sign) e.getClickedBlock().getState();
+		String line0 = ChatColor.stripColor(sign.getLine(0));
+		String line1 = ChatColor.stripColor(sign.getLine(1));
+		if (line0.equals("[Shop]") && line1.equals(name)) {
 		    openShop(e.getPlayer());
 		}
 	    }
@@ -138,14 +167,33 @@ public class Shop implements Listener {
 
     @EventHandler
     public void onShopInventoryClick(InventoryClickEvent e) {
+	Player buyer = (Player) e.getWhoClicked();
 	if (e.getInventory().getName().equals(name + " Shop")) {
-	    int size = e.getInventory().getSize();
 	    int slot = e.getRawSlot();
-	    if (slot < size) {
+	    if (slot < e.getInventory().getSize() && slot >= 0) {
 		e.setCancelled(true);
-		sellItem((Player) e.getWhoClicked(), items.get(slot));
+		if (slot < items.size() && items.get(slot) != null) {
+		    sellItem(buyer, items.get(slot));
+		    Inventory temp = e.getView().getTopInventory();
+		    buyer.closeInventory();
+		    buyer.openInventory(temp);
+		}
 	    }
 	}
+    }
+
+    private void openShop(Player player) {
+	int size = 9 * (int) Math.ceil(items.size() / 9.0);
+	Inventory shopInv = Bukkit.getServer().createInventory(null, size,
+		name + " Shop");
+	for (int i = 0; i < items.size(); i++) {
+	    ShopItem item = items.get(i);
+	    if (item != null)
+		shopInv.setItem(i, item.getShopStack());
+	    else
+		shopInv.setItem(i, null);
+	}
+	player.openInventory(shopInv);
     }
 
     private void sellItem(Player buyer, ShopItem item) {
@@ -153,9 +201,7 @@ public class Shop implements Listener {
 	ItemStack stackToGive = item.getItemStack();
 	int price = item.getPrice();
 
-	String stackName = ChatColor.WHITE
-		+ stackToGive.getItemMeta().getDisplayName()
-		+ ((stackToGive.getAmount() > 1) ? stackToGive.getAmount() : "");
+	String stackName = ChatColor.WHITE + item.getName();
 
 	if (buyerInv.contains(Material.GOLD_INGOT, price)) {
 	    buyerInv.removeItem(new ItemStack(Material.GOLD_INGOT, price));
@@ -166,22 +212,4 @@ public class Shop implements Listener {
 		    + stackName);
 	}
     }
-
-    private void openShop(Player player) {
-	int size = 9 * (int) Math.ceil(items.size() / 9.0);
-	Inventory shopInv = Bukkit.getServer().createInventory(null, size,
-		name + " Shop");
-	for (ShopItem item : items)
-	    shopInv.addItem(item.getShopStack());
-	player.openInventory(shopInv);
-    }
-
-    private boolean isShopSign(Sign clicked) {
-	String[] lines = clicked.getLines();
-	for (String s : lines)
-	    s = ChatColor.stripColor(s);
-	return lines[0].equalsIgnoreCase("[Shop]")
-		&& lines[1].equalsIgnoreCase(name);
-    }
-
 }
