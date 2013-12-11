@@ -111,7 +111,7 @@ public class Shop implements Listener {
 	    addBrewing(new ShopItem(Material.NETHER_STALK, 5));
 	    nextRow(brewingShopItems);
 	    addBrewing(new ShopItem(Material.REDSTONE, 3));
-	    addBrewing(new ShopItem(Material.GLOWSTONE, 3));
+	    addBrewing(new ShopItem(Material.GLOWSTONE_DUST, 3));
 	    addBrewing(new ShopItem(Material.FERMENTED_SPIDER_EYE, 3));
 	    addBrewing(new ShopItem(Material.SULPHUR, 3));
 	    nextRow(brewingShopItems);
