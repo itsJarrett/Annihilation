@@ -70,9 +70,10 @@ public class Shop implements Listener {
 	    }
 	    if (item.getAmount() > 1)
 		name += " x" + item.getAmount();
-	    
-	    // Fix the brewing stand name
-	    name = name.replace(" Item", "");
+
+	    // Case-specific renaming (Band-aid on a broken leg)
+	    name = name.replace("Brewing Stand Item", "Brewing Stand");
+	    name = name.replace("Nether Stalk", "Nether Wart");
 	    return name;
 	}
     }
@@ -107,7 +108,7 @@ public class Shop implements Listener {
 
 	    addBrewing(new ShopItem(Material.BREWING_STAND_ITEM, 10));
 	    addBrewing(new ShopItem(Material.GLASS_BOTTLE, 3, 1));
-	    addBrewing(new ShopItem(Material.NETHER_WARTS, 5));
+	    addBrewing(new ShopItem(Material.NETHER_STALK, 5));
 	    nextRow(brewingShopItems);
 	    addBrewing(new ShopItem(Material.REDSTONE, 3));
 	    addBrewing(new ShopItem(Material.GLOWSTONE, 3));
