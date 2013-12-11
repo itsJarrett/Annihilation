@@ -5,7 +5,6 @@ import net.coasterman10.Annihilation.chests.ChestLocker;
 import net.coasterman10.Annihilation.commands.AnnihilationCommand;
 import net.coasterman10.Annihilation.maps.MapManager;
 import net.coasterman10.Annihilation.maps.VotingManager;
-import net.coasterman10.Annihilation.shop.WeaponShop;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -26,7 +25,6 @@ public final class Annihilation extends JavaPlugin {
 	ScoreboardUtil.initialize(this);
 	new AnnihilationCommand(this);
 	new ChestLocker(this);
-	new WeaponShop(this);
 
 	config = new ConfigManager(this);
 	config.loadConfigFile("config.yml");
