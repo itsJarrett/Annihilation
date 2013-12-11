@@ -1,26 +1,32 @@
 package net.coasterman10.Annihilation.maps;
 
 import java.util.HashMap;
-import java.util.Map.Entry;
-import java.util.Random;
+import java.util.HashSet;
+import java.util.Set;
 
-import net.coasterman10.Annihilation.ScoreboardUtil;
+import net.coasterman10.Annihilation.Annihilation;
+import net.coasterman10.Annihilation.commands.VoteCommand;
+import net.coasterman10.Annihilation.util.ScoreboardUtil;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class VotingManager {
     private final String boardName = "voting";
-    private final HashMap<String, Integer> votes = new HashMap<String, Integer>();
+    private final HashSet<String> maps = new HashSet<String>();
+    private final HashMap<String, String> votes = new HashMap<String, String>();
 
-    public VotingManager(MapManager mapManager) {
-	for (GameMap map : mapManager.getRandomMaps()) {
-	    votes.put(map.getName(), 0);
-	    updateVotes(map.getName());
-	}
+    public VotingManager(Annihilation plugin, MapManager mapManager) {
+	plugin.getCommand("vote").setExecutor(new VoteCommand(this));
+
 	ScoreboardUtil.registerBoard(boardName);
 	ScoreboardUtil.setTitle(boardName, ChatColor.DARK_AQUA + ""
 		+ ChatColor.BOLD + "Voting");
+	for (GameMap map : mapManager.getRandomMaps()) {
+	    maps.add(map.getName());
+	    updateVotes(map.getName());
+	}
     }
 
     public void setCurrentForPlayers(Player... players) {
@@ -28,40 +34,28 @@ public class VotingManager {
 	    ScoreboardUtil.setBoard(p, boardName);
     }
 
-    public void updateVotes(String map) {
-	if (votes.containsKey(map)) {
-	    ScoreboardUtil.setScore(boardName, map, votes.get(map));
+    public boolean vote(CommandSender voter, String vote) {
+	for (String map : maps) {
+	    if (vote.equalsIgnoreCase(map)) {
+		votes.put(voter.getName(), map);
+		updateVotes(map);
+		voter.sendMessage(ChatColor.GOLD + "You voted for "
+			+ ChatColor.WHITE + map);
+		return true;
+	    }
 	}
-    }
-
-    public boolean vote(String map) {
-	if (votes.containsKey(map)) {
-	    votes.put(map, votes.get(map) + 1);
-	    updateVotes(map);
-	    return true;
-	}
-	return false;
-    }
-
-    public boolean unvote(String map) {
-	if (votes.containsKey(map)) {
-	    votes.put(map, votes.get(map) - 1);
-	    updateVotes(map);
-	    return true;
-	}
+	voter.sendMessage(vote + ChatColor.RED + " is not a valid map");
 	return false;
     }
 
     public String getWinner() {
 	String winner = null;
-	Integer highest = 0;
-	for (Entry<String, Integer> e : votes.entrySet()) {
-	    if (e.getValue() > highest) {
-		winner = e.getKey();
-		highest = e.getValue();
-	    }
-	    if (e.getValue() == highest && e.getValue() > 0) {
-		return (new Random().nextBoolean()) ? winner : e.getKey();
+	Integer highest = -1;
+	for (String map : maps) {
+	    int totalVotes = countVotes(map);
+	    if (totalVotes > highest) {
+		winner = map;
+		highest = totalVotes;
 	    }
 	}
 	return winner;
@@ -69,5 +63,22 @@ public class VotingManager {
 
     public void end() {
 	ScoreboardUtil.clear(boardName);
+    }
+
+    public Set<String> getMaps() {
+	return maps;
+    }
+
+    private void updateVotes(String map) {
+	int totalVotes = countVotes(map);
+	ScoreboardUtil.setScore(boardName, map, totalVotes);
+    }
+
+    private int countVotes(String map) {
+	int total = 0;
+	for (String vote : votes.values())
+	    if (vote.equals(map))
+		total++;
+	return total;
     }
 }
