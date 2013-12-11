@@ -3,7 +3,7 @@ package net.coasterman10.Annihilation.bar;
 import java.util.HashMap;
 
 import net.coasterman10.Annihilation.Annihilation;
-import net.coasterman10.Annihilation.SchedulerUtil;
+import net.coasterman10.Annihilation.util.SchedulerUtil;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
