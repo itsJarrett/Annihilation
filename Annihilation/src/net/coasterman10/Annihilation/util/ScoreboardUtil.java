@@ -2,8 +2,7 @@ package net.coasterman10.Annihilation.util;
 
 import java.util.HashMap;
 
-import net.coasterman10.Annihilation.Annihilation;
-
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -12,19 +11,12 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 
 public class ScoreboardUtil {
-    private static Annihilation plugin;
-
     private static final HashMap<String, Scoreboard> scoreboards = new HashMap<String, Scoreboard>();
 
-    public static void initialize(Annihilation plugin) {
-	ScoreboardUtil.plugin = plugin;
-    }
-
     public static void registerBoard(String name) {
-	ScoreboardManager manager = plugin.getServer().getScoreboardManager();
+	ScoreboardManager manager = Bukkit.getScoreboardManager();
 	Scoreboard scoreboard = manager.getNewScoreboard();
 	scoreboards.put(name, scoreboard);
-	plugin.getLogger().info("Registered scoreboard " + name);
     }
 
     public static void setBoard(Player player, String board) {
@@ -53,7 +45,7 @@ public class ScoreboardUtil {
 		o = scoreboard.registerNewObjective("obj", "dummy");
 		o.setDisplaySlot(DisplaySlot.SIDEBAR);
 	    }
-	    Score s = o.getScore(plugin.getServer().getOfflinePlayer(name));
+	    Score s = o.getScore(Bukkit.getOfflinePlayer(name));
 	    s.setScore(score);
 	}
     }

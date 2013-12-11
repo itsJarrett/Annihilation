@@ -7,7 +7,6 @@ import net.coasterman10.Annihilation.maps.MapManager;
 import net.coasterman10.Annihilation.maps.VotingManager;
 import net.coasterman10.Annihilation.shop.Shop;
 import net.coasterman10.Annihilation.util.SchedulerUtil;
-import net.coasterman10.Annihilation.util.ScoreboardUtil;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -26,8 +25,7 @@ public final class Annihilation extends JavaPlugin {
 
     @Override
     public void onEnable() {
-	SchedulerUtil.initialize(this);
-	ScoreboardUtil.initialize(this);
+	SchedulerUtil.setPlugin(this);
 	new AnnihilationCommand(this);
 	new ChestLocker(this);
 

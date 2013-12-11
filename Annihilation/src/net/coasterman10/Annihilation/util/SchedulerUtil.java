@@ -8,7 +8,7 @@ public class SchedulerUtil {
     private static Annihilation plugin;
     private static BukkitScheduler scheduler;
     
-    public static void initialize(Annihilation plugin) {
+    public static void setPlugin(Annihilation plugin) {
 	SchedulerUtil.plugin = plugin;
 	SchedulerUtil.scheduler = plugin.getServer().getScheduler();
     }
