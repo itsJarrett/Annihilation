@@ -6,7 +6,6 @@ import java.util.Random;
 
 import net.coasterman10.Annihilation.ScoreboardUtil;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -19,9 +18,9 @@ public class VotingManager {
 	    votes.put(map.getName(), 0);
 	    updateVotes(map.getName());
 	}
+	ScoreboardUtil.registerBoard(boardName);
 	ScoreboardUtil.setTitle(boardName, ChatColor.DARK_AQUA + ""
 		+ ChatColor.BOLD + "Voting");
-	setCurrentForPlayers(Bukkit.getOnlinePlayers());
     }
 
     public void setCurrentForPlayers(Player... players) {
@@ -67,7 +66,7 @@ public class VotingManager {
 	}
 	return winner;
     }
-    
+
     public void end() {
 	ScoreboardUtil.clear(boardName);
     }
