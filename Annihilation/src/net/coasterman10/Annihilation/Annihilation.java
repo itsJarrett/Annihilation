@@ -25,6 +25,9 @@ public final class Annihilation extends JavaPlugin {
 	ScoreboardUtil.initialize(this);
 	new AnnihilationCommand(this);
 	new ChestLocker(this);
+	
+	new Shop(this, "Weapon", Shop.Inventories.weaponShopItems);
+	new Shop(this, "Brewing", Shop.Inventories.brewingShopItems);
 
 	config = new ConfigManager(this);
 	config.loadConfigFile("config.yml");
@@ -42,6 +45,8 @@ public final class Annihilation extends JavaPlugin {
     }
 
     public void startTimer() {
+	voting.setCurrentForPlayers(getServer().getOnlinePlayers());
+	
 	for (Player p : getServer().getOnlinePlayers()) {
 	    bar.setMessageAndPercent(p, ChatColor.GREEN + "Starting in 120", 0F);
 	}
@@ -85,7 +90,7 @@ public final class Annihilation extends JavaPlugin {
 		long minutes = (time - hours * 3600L) / 60L;
 		long seconds = time - hours * 3600L - minutes * 60L;
 		for (Player p : getServer().getOnlinePlayers())
-		    bar.setMessageAndPercent(p, "Phase 5 | "
+		    bar.setMessageAndPercent(p, "Phase " + getPhase() + " | "
 			    + ((hours < 10L) ? "0" + hours : hours) + ":"
 			    + ((minutes < 10L) ? "0" + minutes : minutes) + ":"
 			    + ((seconds < 10L) ? "0" + seconds : seconds), 1L);
