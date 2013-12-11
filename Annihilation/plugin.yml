@@ -7,3 +7,5 @@ commands:
     aliases: anni
   unlock:
     description: Unlocks your locked chest
+  vote:
+    description: Places vote for a map
