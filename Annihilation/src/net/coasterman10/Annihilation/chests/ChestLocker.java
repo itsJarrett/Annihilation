@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import net.coasterman10.Annihilation.Annihilation;
 import net.coasterman10.Annihilation.commands.UnlockCommand;
+import net.coasterman10.Annihilation.util.TeamUtil;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -41,8 +42,8 @@ public class ChestLocker implements Listener {
 	Player player = e.getPlayer();
 	if (chests.containsKey(block)) {
 	    String owner = chests.get(block);
-
-	    // TODO Also make sure the player not the owner's enemy
+	    if (!TeamUtil.onSameTeam(owner, player.getName()))
+		return;
 	    if (owner != player.getName()) {
 		e.setCancelled(true);
 		player.sendMessage(ChatColor.GOLD
@@ -63,8 +64,7 @@ public class ChestLocker implements Listener {
 	Block below = block.getRelative(BlockFace.DOWN);
 
 	if (chests.containsKey(below)) {
-	    // TODO Also make sure the player is not the owner's enemy
-	    if (chests.get(below) != player.getName()) {
+	    if (chests.get(below) != player.getName() && !TeamUtil.onSameTeam(chests.get(below), player.getName())) {
 		e.setCancelled(true);
 		String owner = chests.get(below);
 		player.sendMessage(ChatColor.GOLD + "You can't block " + owner
@@ -96,9 +96,8 @@ public class ChestLocker implements Listener {
 	    Block chest = (Block) e.getInventory().getHolder();
 	    Player player = (Player) e.getPlayer();
 	    String owner = chests.get(chest);
-
-	    // TODO Also check that the player trying to open the chest is not
-	    // the owner's enemy
+	    if (!TeamUtil.onSameTeam(owner, player.getName()))
+		    return;
 	    if (owner != player.getName()) {
 		e.setCancelled(true);
 		(player).sendMessage(ChatColor.GOLD
