@@ -26,7 +26,7 @@ public final class Annihilation extends JavaPlugin {
 	configManager = new ConfigManager(this);
 	configManager.loadConfigFile("config.yml");
 	
-	timer = new PhaseTimer(this, -120L, 600L);
+	timer = new PhaseTimer(this, 120L, 600L);
 
 	FileConfiguration config = configManager.getConfig("config.yml");
 	maps = new MapManager(getLogger(),
