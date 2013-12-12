@@ -10,11 +10,11 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Annihilation extends JavaPlugin {
-    public ConfigManager configManager;
-    public VotingManager voting;
-    public MapManager maps;
+    private ConfigManager configManager;
+    private VotingManager voting;
+    private MapManager maps;
 
-    private final PhaseTimer timer = new PhaseTimer(this, -120L, 600L);
+    private PhaseTimer timer;
 
     @Override
     public void onEnable() {
@@ -25,6 +25,8 @@ public final class Annihilation extends JavaPlugin {
 
 	configManager = new ConfigManager(this);
 	configManager.loadConfigFile("config.yml");
+	
+	timer = new PhaseTimer(this, -120L, 600L);
 
 	FileConfiguration config = configManager.getConfig("config.yml");
 	maps = new MapManager(getLogger(),
