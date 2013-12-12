@@ -15,10 +15,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-public class BarUtil implements Listener {
+public class BarManager implements Listener {
     private HashMap<String, FakeDragon> players = new HashMap<String, FakeDragon>();
 
-    public BarUtil(Annihilation plugin) {
+    public BarManager(Annihilation plugin) {
 	plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
     
