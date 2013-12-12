@@ -3,7 +3,6 @@ package net.coasterman10.Annihilation.bar;
 import java.util.HashMap;
 
 import net.coasterman10.Annihilation.Annihilation;
-import net.coasterman10.Annihilation.util.SchedulerUtil;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -16,9 +15,11 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class BarManager implements Listener {
+    private final Annihilation plugin;
     private HashMap<String, FakeDragon> players = new HashMap<String, FakeDragon>();
 
     public BarManager(Annihilation plugin) {
+	this.plugin = plugin;
 	plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
     
@@ -78,7 +79,7 @@ public class BarManager implements Listener {
     private void handleTeleport(final Player player, final Location loc) {
 	if (!hasBar(player))
 	    return;
-	SchedulerUtil.runDelayed(new Runnable() {
+	plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 	    @Override
 	    public void run() {
 		FakeDragon oldDragon = getDragon(player, "");

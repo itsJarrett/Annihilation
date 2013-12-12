@@ -3,9 +3,9 @@ package net.coasterman10.Annihilation;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import net.coasterman10.Annihilation.bar.BarManager;
-import net.coasterman10.Annihilation.util.SchedulerUtil;
 
 public class PhaseTimer {
     private long time;
@@ -27,7 +27,12 @@ public class PhaseTimer {
 
     public void start() {
 	if (!isRunning) {
-	    SchedulerUtil.runRepeating(new SecondTask(), 20L, 20L);
+	    BukkitScheduler scheduler = plugin.getServer().getScheduler();
+	    scheduler.scheduleSyncRepeatingTask(plugin, new Runnable() {
+		public void run() {
+		    onSecond();
+		}
+	    }, 20L, 20L);
 	    isRunning = true;
 	}
 
@@ -91,12 +96,5 @@ public class PhaseTimer {
 	long minutes = (time - hours * 3600L) / 60L;
 	long seconds = time - hours * 3600L - minutes * 60L;
 	return String.format("%02d:%02d:%02d", hours, minutes, seconds);
-    }
-
-    private class SecondTask implements Runnable {
-	@Override
-	public void run() {
-	    PhaseTimer.this.onSecond();
-	}
     }
 }

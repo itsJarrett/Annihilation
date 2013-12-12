@@ -5,7 +5,6 @@ import net.coasterman10.Annihilation.commands.AnnihilationCommand;
 import net.coasterman10.Annihilation.maps.MapManager;
 import net.coasterman10.Annihilation.maps.VotingManager;
 import net.coasterman10.Annihilation.shop.Shop;
-import net.coasterman10.Annihilation.util.SchedulerUtil;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,10 +18,8 @@ public final class Annihilation extends JavaPlugin {
 
     @Override
     public void onEnable() {
-	SchedulerUtil.setPlugin(this);
 	new AnnihilationCommand(this);
 	new ChestLocker(this);
-
 	new Shop(this, "Weapon", Shop.Inventories.weaponShopItems);
 	new Shop(this, "Brewing", Shop.Inventories.brewingShopItems);
 
