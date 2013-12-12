@@ -9,6 +9,8 @@ import java.util.logging.Logger;
 
 import net.coasterman10.Annihilation.BadConfigException;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -35,7 +37,7 @@ public class MapManager {
     public boolean selectMap(String mapName) {
 	if (maps.containsKey(mapName)) {
 	    currentMap = mapName;
-	    log.info("Selected map " + mapName);
+	    Bukkit.broadcastMessage(ChatColor.GREEN + "Selected map " + mapName);
 	    return true;
 	} else {
 	    log.severe("Unable to select map" + mapName);
