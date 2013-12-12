@@ -40,7 +40,7 @@ public class TeamUtil {
 		    .contains(Bukkit.getOfflinePlayer(username)))
 		return team;
 	}
-	return null;
+	return "lobby";
     }
 
     public static boolean onSameTeam(String username1, String username2) {
