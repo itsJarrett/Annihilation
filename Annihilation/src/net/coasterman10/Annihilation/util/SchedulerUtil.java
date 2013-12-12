@@ -24,4 +24,8 @@ public class SchedulerUtil {
     public static int runRepeating(Runnable task, long delay, long period) {
 	return scheduler.scheduleSyncRepeatingTask(plugin, task, delay, period);
     }
+
+    public static void cancel(int taskID) {
+	scheduler.cancelTask(taskID);
+    }
 }
