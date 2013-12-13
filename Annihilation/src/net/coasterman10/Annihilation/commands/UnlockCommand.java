@@ -1,6 +1,6 @@
 package net.coasterman10.Annihilation.commands;
 
-import net.coasterman10.Annihilation.chests.ChestLocker;
+import net.coasterman10.Annihilation.ChestLocker;
 
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;

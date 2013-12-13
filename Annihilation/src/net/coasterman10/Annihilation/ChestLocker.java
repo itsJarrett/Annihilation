@@ -1,10 +1,9 @@
-package net.coasterman10.Annihilation.chests;
+package net.coasterman10.Annihilation;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
-import net.coasterman10.Annihilation.Annihilation;
 import net.coasterman10.Annihilation.commands.UnlockCommand;
 import net.coasterman10.Annihilation.util.TeamUtil;
 

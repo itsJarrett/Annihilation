@@ -12,14 +12,14 @@ import net.coasterman10.Annihilation.BadConfigException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.Configuration;
 
 public class MapManager {
     private final Logger log;
     private final Map<String, GameMap> maps = new HashMap<String, GameMap>();
     private String currentMap;
 
-    public MapManager(Logger log, ConfigurationSection config) {
+    public MapManager(Logger log, Configuration config) {
 	this.log = log;
 	for (String name : config.getKeys(false)) {
 	    try {

@@ -1,15 +1,16 @@
-package net.coasterman10.Annihilation.shop;
+package net.coasterman10.Annihilation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-import net.coasterman10.Annihilation.Annihilation;
 
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,19 +25,16 @@ public class Shop implements Listener {
 	private ItemStack item;
 	private int price;
 
-	public ShopItem(Material type, int price) {
+	public ShopItem(Material type, int qty, int price) {
 	    item = new ItemStack(type);
 	    this.price = price;
-	}
-
-	public ShopItem(Material type, int qty, int price) {
-	    this(type, price);
 	    item.setAmount(qty);
 	}
 
 	public ShopItem setName(String name) {
+	    // Prepend white chat color to prevent italicization
 	    ItemMeta meta = item.getItemMeta();
-	    meta.setDisplayName(name);
+	    meta.setDisplayName(ChatColor.WHITE + name);
 	    item.setItemMeta(meta);
 	    return this;
 	}
@@ -73,86 +71,19 @@ public class Shop implements Listener {
 		name += ChatColor.WHITE; // In case it's a wand
 	    }
 	    if (item.getAmount() > 1)
-		name += " x" + item.getAmount();
+		name = item.getAmount() + " " + name;
 
-	    // Case-specific renaming (Band-aid on a broken leg)
-	    name = name.replace("Brewing Stand Item", "Brewing Stand");
-	    name = name.replace("Nether Stalk", "Nether Wart");
 	    return name;
 	}
     }
 
-    public static class Inventories {
-	public static final ArrayList<ShopItem> weaponShopItems,
-		brewingShopItems;
+    private String name;
+    private ArrayList<ShopItem> items;
 
-	static {
-	    weaponShopItems = new ArrayList<ShopItem>();
-	    brewingShopItems = new ArrayList<ShopItem>();
-
-	    String wandPrefix = ChatColor.YELLOW.toString()
-		    + ChatColor.BOLD.toString();
-
-	    // I didn't feel like using a config for this and having to parse
-	    // strings so I just initialized it here
-	    addWeapon(new ShopItem(Material.CHAINMAIL_HELMET, 10));
-	    addWeapon(new ShopItem(Material.CHAINMAIL_CHESTPLATE, 10));
-	    addWeapon(new ShopItem(Material.CHAINMAIL_LEGGINGS, 10));
-	    addWeapon(new ShopItem(Material.CHAINMAIL_BOOTS, 10));
-	    addWeapon(new ShopItem(Material.IRON_SWORD, 5));
-	    addWeapon(new ShopItem(Material.BOW, 5));
-	    addWeapon(new ShopItem(Material.ARROW, 32, 5));
-	    addWeapon(new ShopItem(Material.BLAZE_ROD, 16).setName(wandPrefix
-		    + "Apprentice Wand"));
-	    addWeapon(new ShopItem(Material.BLAZE_ROD, 32).setName(wandPrefix
-		    + "Master Wand"));
-	    addWeapon(new ShopItem(Material.BREAD, 4, 5));
-	    addWeapon(new ShopItem(Material.MELON, 16, 5));
-	    addWeapon(new ShopItem(Material.CAKE, 5));
-
-	    addBrewing(new ShopItem(Material.BREWING_STAND_ITEM, 10));
-	    addBrewing(new ShopItem(Material.GLASS_BOTTLE, 3, 1));
-	    addBrewing(new ShopItem(Material.NETHER_STALK, 5));
-	    nextRow(brewingShopItems);
-	    addBrewing(new ShopItem(Material.REDSTONE, 3));
-	    addBrewing(new ShopItem(Material.GLOWSTONE_DUST, 3));
-	    addBrewing(new ShopItem(Material.FERMENTED_SPIDER_EYE, 3));
-	    addBrewing(new ShopItem(Material.SULPHUR, 3));
-	    nextRow(brewingShopItems);
-	    addBrewing(new ShopItem(Material.BLAZE_POWDER, 15));
-	    addBrewing(new ShopItem(Material.GHAST_TEAR, 15));
-	    addBrewing(new ShopItem(Material.GOLDEN_CARROT, 2));
-	    addBrewing(new ShopItem(Material.MAGMA_CREAM, 2));
-	    addBrewing(new ShopItem(Material.SUGAR, 2));
-	    addBrewing(new ShopItem(Material.SPIDER_EYE, 2));
-	    addBrewing(new ShopItem(Material.SPECKLED_MELON, 1));
-	}
-
-	private static void addWeapon(ShopItem item) {
-	    weaponShopItems.add(item);
-	}
-
-	private static void addBrewing(ShopItem item) {
-	    brewingShopItems.add(item);
-	}
-
-	private static void nextRow(ArrayList<ShopItem> list) {
-	    int start = list.size();
-	    int end = 9 * (int) Math.ceil(list.size() / 9.0);
-	    for (int i = start; i < end; i++) {
-		list.add(null);
-	    }
-	}
-
-    }
-
-    private final String name;
-    private final ArrayList<ShopItem> items;
-
-    public Shop(Annihilation plugin, String name, ArrayList<ShopItem> items) {
-	this.name = name;
-	this.items = items;
+    public Shop(Annihilation plugin, String name, Configuration config) {
 	plugin.getServer().getPluginManager().registerEvents(this, plugin);
+	this.name = name;
+	loadConfig(config);
     }
 
     @EventHandler
@@ -170,19 +101,18 @@ public class Shop implements Listener {
 	}
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler
     public void onShopInventoryClick(InventoryClickEvent e) {
 	Player buyer = (Player) e.getWhoClicked();
 	if (e.getInventory().getName().equals(name + " Shop")) {
 	    int slot = e.getRawSlot();
 	    if (slot < e.getInventory().getSize() && slot >= 0) {
-		e.setCancelled(true);
 		if (slot < items.size() && items.get(slot) != null) {
 		    sellItem(buyer, items.get(slot));
-		    Inventory temp = e.getView().getTopInventory();
-		    buyer.closeInventory();
-		    buyer.openInventory(temp);
 		}
+		e.setCancelled(true);
+		buyer.updateInventory();
 	    }
 	}
     }
@@ -215,6 +145,34 @@ public class Shop implements Listener {
 	} else {
 	    buyer.sendMessage(ChatColor.RED + "Insufficient gold to purchase "
 		    + stackName);
+	}
+    }
+
+    private void loadConfig(Configuration config) {
+	items = new ArrayList<ShopItem>();
+
+	List<String> list = config.getStringList(name.toLowerCase());
+	for (String entry : list) {
+	    if (entry.equalsIgnoreCase("nextline")) {
+		int end = 9 * (int) Math.ceil(items.size() / 9.0);
+		for (int i = items.size(); i < end; i++)
+		    items.add(null);
+	    } else {
+		String[] params = entry.split(",");
+		if (params.length >= 3) {
+		    Material type = Material.getMaterial(params[0]);
+		    int qty = Integer.valueOf(params[1]);
+		    int price = Integer.valueOf(params[2]);
+		    ShopItem item = new ShopItem(type, qty, price);
+		    if (params.length >= 4) {
+			String itemName = params[3].replace("\"", "");
+			// Longest method name ever. Great job bukkit team.
+			item.setName(ChatColor.translateAlternateColorCodes(
+				'$', itemName));
+		    }
+		    items.add(item);
+		}
+	    }
 	}
     }
 }
