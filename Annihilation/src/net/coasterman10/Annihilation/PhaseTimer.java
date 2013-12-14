@@ -2,6 +2,7 @@ package net.coasterman10.Annihilation;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -19,9 +20,17 @@ public class PhaseTimer {
 
     public PhaseTimer(Annihilation plugin, long start, long period) {
 	this.plugin = plugin;
-	this.bar = new BarManager(plugin);
+	bar = new BarManager(plugin);
 	startTime = start;
 	phaseTime = period;
+	phase = 0;
+    }
+
+    public PhaseTimer(Annihilation plugin, ConfigurationSection config) {
+	this.plugin = plugin;
+	bar = new BarManager(plugin);
+	startTime = config.getLong("start-delay", 120L);
+	phaseTime = config.getLong("phase-period", 600L);
 	phase = 0;
     }
 

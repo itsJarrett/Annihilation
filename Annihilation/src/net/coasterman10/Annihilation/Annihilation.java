@@ -20,19 +20,20 @@ public final class Annihilation extends JavaPlugin {
     public void onEnable() {
 	configManager = new ConfigManager(this);
 	configManager.loadConfigFiles("config.yml", "maps.yml", "shops.yml");
-	
+
 	maps = new MapManager(getLogger(), configManager.getConfig("maps.yml"));
 	teams = new TeamManager(this);
-	
+
 	Configuration shops = configManager.getConfig("shops.yml");
 	new Shop(this, "Weapon", shops);
 	new Shop(this, "Brewing", shops);
-	
+
 	new AnnihilationCommand(this);
 	new ChestLocker(this, teams);
 	new ChatListener(this, teams);
-	
-	timer = new PhaseTimer(this, 10L, 60L);
+
+	Configuration config = configManager.getConfig("config.yml");
+	timer = new PhaseTimer(this, config);
 	voting = new VotingManager(this, maps);
     }
 
