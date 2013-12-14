@@ -40,7 +40,7 @@ public class MapManager {
 	    Bukkit.broadcastMessage(ChatColor.GREEN + "Selected map " + mapName);
 	    return true;
 	} else {
-	    log.severe("Unable to select map" + mapName);
+	    log.severe("Unable to select map " + mapName);
 	    return false;
 	}
     }
