@@ -94,7 +94,7 @@ public class Shop implements Listener {
 		Sign sign = (Sign) e.getClickedBlock().getState();
 		String line0 = ChatColor.stripColor(sign.getLine(0));
 		String line1 = ChatColor.stripColor(sign.getLine(1));
-		if (line0.equals("[Shop]") && line1.equals(name)) {
+		if (line0.equals(ChatColor.DARK_PURPLE + "[Shop]") && line1.equals(name)) {
 		    openShop(e.getPlayer());
 		}
 	    }
