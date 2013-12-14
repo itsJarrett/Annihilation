@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -94,7 +93,8 @@ public class Shop implements Listener {
 		Sign sign = (Sign) e.getClickedBlock().getState();
 		String line0 = ChatColor.stripColor(sign.getLine(0));
 		String line1 = ChatColor.stripColor(sign.getLine(1));
-		if (line0.equals(ChatColor.DARK_PURPLE + "[Shop]") && line1.equals(name)) {
+		if (line0.equals(ChatColor.DARK_PURPLE + "[Shop]")
+			&& line1.equals(name)) {
 		    openShop(e.getPlayer());
 		}
 	    }
@@ -112,11 +112,11 @@ public class Shop implements Listener {
 		    sellItem(buyer, items.get(slot));
 		}
 		e.setCancelled(true);
-		buyer.updateInventory();
 	    }
+	    buyer.updateInventory();
 	}
     }
- 
+
     private void openShop(Player player) {
 	int size = 9 * (int) Math.ceil(items.size() / 9.0);
 	Inventory shopInv = Bukkit.getServer().createInventory(null, size,
