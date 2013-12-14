@@ -31,10 +31,10 @@ public class ChestLocker implements Listener {
 	faces.add(BlockFace.WEST);
     };
 
-    public ChestLocker(Annihilation plugin, TeamManager teamManager) {
+    public ChestLocker(Annihilation plugin) {
 	plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	plugin.getCommand("unlock").setExecutor(new UnlockCommand(this));
-	this.teamManager = teamManager;
+	teamManager = plugin.getTeamManager();
     };
 
     @EventHandler(ignoreCancelled = true)

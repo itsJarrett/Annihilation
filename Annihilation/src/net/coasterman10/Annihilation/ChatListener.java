@@ -12,10 +12,10 @@ public class ChatListener implements Listener {
     private final TeamManager teamManager;
     private final Annihilation plugin;
 
-    public ChatListener(Annihilation plugin, TeamManager teamManager) {
+    public ChatListener(Annihilation plugin) {
 	plugin.getServer().getPluginManager().registerEvents(this, plugin);
-	this.teamManager = teamManager;
 	this.plugin = plugin;
+	teamManager = plugin.getTeamManager();
     }
 
     @EventHandler

@@ -13,3 +13,5 @@ test:
     yellow: "-20,10,20"
     green: "20,10,20"
     blue: "20,10,-20"
+lobby:
+  spawn: "0,64,0"

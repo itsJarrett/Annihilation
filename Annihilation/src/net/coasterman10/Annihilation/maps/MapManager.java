@@ -17,11 +17,14 @@ import org.bukkit.configuration.Configuration;
 public class MapManager {
     private final Logger log;
     private final Map<String, GameMap> maps = new HashMap<String, GameMap>();
+    private final LobbyMap lobby;
     private String currentMap;
 
     public MapManager(Logger log, Configuration config) {
 	this.log = log;
 	for (String name : config.getKeys(false)) {
+	    if (name.equalsIgnoreCase("lobby"))
+		continue;
 	    try {
 		GameMap map = new GameMap(config.getConfigurationSection(name));
 		maps.put(name, map);
@@ -32,6 +35,7 @@ public class MapManager {
 		e.printStackTrace();
 	    }
 	}
+	lobby = new LobbyMap(config.getConfigurationSection("lobby"));
     }
 
     public boolean selectMap(String mapName) {
@@ -53,12 +57,20 @@ public class MapManager {
 	return maps.get(currentMap);
     }
 
+    public LobbyMap getLobbyMap() {
+	return lobby;
+    }
+
     public Location getSpawnPoint(String team) {
 	return getCurrentMap().getSpawnPoint(team);
     }
 
     public Location getNexus(String team) {
 	return maps.get(currentMap).getNexusLocation(team);
+    }
+
+    public Location getLobbySpawnPoint() {
+	return lobby.getSpawnPoint();
     }
 
     public List<GameMap> getRandomMaps() {

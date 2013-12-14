@@ -11,10 +11,12 @@ public class Team {
     private final String name;
     private final String prefix;
     private final Set<String> playerNames = new HashSet<String>();
+    private boolean alive;
 
     public Team(String name, String prefix) {
 	this.name = name;
 	this.prefix = prefix;
+	alive = true;
     }
 
     public void addPlayer(String name) {
@@ -55,5 +57,9 @@ public class Team {
     
     public String getFullName() {
 	return prefix + WordUtils.capitalize(name) + " Team";
+    }
+
+    public boolean isAlive() {
+	return alive;
     }
 }

@@ -14,7 +14,7 @@ public class TeamManager {
 	    ChatColor.DARK_PURPLE.toString());
 
     public TeamManager(Annihilation plugin) {
-	new TeamCommand(plugin, this);
+	new TeamCommand(plugin);
 	teams.add(new Team("red", ChatColor.RED.toString()));
 	teams.add(new Team("blue", ChatColor.BLUE.toString()));
 	teams.add(new Team("green", ChatColor.GREEN.toString()));

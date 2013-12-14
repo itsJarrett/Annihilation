@@ -32,12 +32,13 @@ public final class Annihilation extends JavaPlugin {
 	new Shop(this, "Brewing", shops);
 
 	new AnnihilationCommand(this);
-	new ChestLocker(this, teams);
-	new ChatListener(this, teams);
+	new ChestLocker(this);
+	new ChatListener(this);
+	new PlayerListener(this);
 
 	Configuration config = configManager.getConfig("config.yml");
 	timer = new PhaseTimer(this, config);
-	voting = new VotingManager(this, maps);
+	voting = new VotingManager(this);
     }
 
     @Override
@@ -78,5 +79,17 @@ public final class Annihilation extends JavaPlugin {
 
 	if (time == 0L)
 	    startGame();
+    }
+
+    public int getPhase() {
+	return timer.getPhase();
+    }
+
+    public TeamManager getTeamManager() {
+	return teams;
+    }
+    
+    public MapManager getMapManager() {
+	return maps;
     }
 }

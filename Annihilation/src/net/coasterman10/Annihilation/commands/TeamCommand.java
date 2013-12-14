@@ -11,11 +11,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class TeamCommand implements CommandExecutor {
-    private TeamManager teamManager;
+    private final Annihilation plugin;
+    private final TeamManager teamManager;
 
-    public TeamCommand(Annihilation plugin, TeamManager teamManager) {
+    public TeamCommand(Annihilation plugin) {
 	plugin.getCommand("team").setExecutor(this);
-	this.teamManager = teamManager;
+	this.plugin = plugin;
+	teamManager = plugin.getTeamManager();
     }
 
     @Override
@@ -52,6 +54,11 @@ public class TeamCommand implements CommandExecutor {
 	target.addPlayer(player.getName());
 	player.sendMessage(ChatColor.DARK_AQUA + "You joined "
 		+ target.getFullName());
+
+	if (plugin.getPhase() > 0) {
+	    player.teleport(plugin.getMapManager().getSpawnPoint(
+		    target.getName()));
+	}
     }
 
     private void listTeams(CommandSender sender) {

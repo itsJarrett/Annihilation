@@ -18,19 +18,19 @@ public class VotingManager implements Listener {
     private final HashSet<String> maps = new HashSet<String>();
     private final HashMap<String, String> votes = new HashMap<String, String>();
 
-    public VotingManager(Annihilation plugin, MapManager mapManager) {
+    public VotingManager(Annihilation plugin) {
 	plugin.getCommand("vote").setExecutor(new VoteCommand(this));
 
 	String title = ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Voting";
 	statBoard = new StatBoard(plugin.getServer().getScoreboardManager());
 	statBoard.setTitle(title);
 
-	for (GameMap map : mapManager.getRandomMaps()) {
+	for (GameMap map : plugin.getMapManager().getRandomMaps()) {
 	    maps.add(map.getName());
 	    statBoard.setScore(map.getName(), 0);
 	}
     }
-    
+
     public void setCurrentForPlayers(Player... players) {
 	statBoard.showForPlayers(players);
     }
