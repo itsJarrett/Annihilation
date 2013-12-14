@@ -82,7 +82,25 @@ public class PhaseTimer {
 		percent = 1F;
 	    else
 		percent = (float) getRemainingPhaseTime() / (float) phaseTime;
-	    text = "Phase " + phase + " | " + timeString();
+	    text = "Phase " + phase;
+	    switch (phase) {
+	    case 1:
+		text = ChatColor.BLUE + text;
+		break;
+	    case 2:
+		text = ChatColor.GREEN + text;
+		break;
+	    case 3:
+		text = ChatColor.YELLOW + text;
+		break;
+	    case 4:
+		text = ChatColor.GOLD + text;
+		break;
+	    case 5:
+		text = ChatColor.RED + text;
+		break;
+	    }
+	    text += ChatColor.WHITE + " | " + timeString();
 	}
 
 	for (Player p : Bukkit.getOnlinePlayers())

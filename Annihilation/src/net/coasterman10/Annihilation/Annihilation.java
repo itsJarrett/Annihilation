@@ -3,6 +3,7 @@ package net.coasterman10.Annihilation;
 import net.coasterman10.Annihilation.commands.AnnihilationCommand;
 import net.coasterman10.Annihilation.maps.MapManager;
 import net.coasterman10.Annihilation.maps.VotingManager;
+import net.coasterman10.Annihilation.teams.TeamManager;
 
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -11,6 +12,7 @@ public final class Annihilation extends JavaPlugin {
     private ConfigManager configManager;
     private VotingManager voting;
     private MapManager maps;
+    private TeamManager teams;
 
     private PhaseTimer timer;
 
@@ -20,15 +22,17 @@ public final class Annihilation extends JavaPlugin {
 	configManager.loadConfigFiles("config.yml", "maps.yml", "shops.yml");
 	
 	maps = new MapManager(getLogger(), configManager.getConfig("maps.yml"));
+	teams = new TeamManager(this);
 	
 	Configuration shops = configManager.getConfig("shops.yml");
 	new Shop(this, "Weapon", shops);
 	new Shop(this, "Brewing", shops);
 	
 	new AnnihilationCommand(this);
-	new ChestLocker(this);
+	new ChestLocker(this, teams);
+	new ChatListener(this, teams);
 	
-	timer = new PhaseTimer(this, 120L, 600L);
+	timer = new PhaseTimer(this, 10L, 60L);
 	voting = new VotingManager(this, maps);
     }
 

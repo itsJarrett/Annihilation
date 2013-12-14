@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 
 import net.coasterman10.Annihilation.commands.UnlockCommand;
-import net.coasterman10.Annihilation.util.TeamUtil;
+import net.coasterman10.Annihilation.teams.TeamManager;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -20,6 +20,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 
 public class ChestLocker implements Listener {
+    private final TeamManager teamManager;
     private final HashMap<Block, String> chests = new HashMap<Block, String>();
     private final static HashSet<BlockFace> faces = new HashSet<BlockFace>();
 
@@ -30,9 +31,10 @@ public class ChestLocker implements Listener {
 	faces.add(BlockFace.WEST);
     };
 
-    public ChestLocker(Annihilation plugin) {
+    public ChestLocker(Annihilation plugin, TeamManager teamManager) {
 	plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	plugin.getCommand("unlock").setExecutor(new UnlockCommand(this));
+	this.teamManager = teamManager;
     };
 
     @EventHandler(ignoreCancelled = true)
@@ -41,7 +43,7 @@ public class ChestLocker implements Listener {
 	Player player = e.getPlayer();
 	if (chests.containsKey(block)) {
 	    String owner = chests.get(block);
-	    if (!TeamUtil.onSameTeam(owner, player.getName()))
+	    if (!teamManager.areFriendly(owner, player.getName()))
 		return;
 	    if (owner != player.getName()) {
 		e.setCancelled(true);
@@ -63,7 +65,9 @@ public class ChestLocker implements Listener {
 	Block below = block.getRelative(BlockFace.DOWN);
 
 	if (chests.containsKey(below)) {
-	    if (chests.get(below) != player.getName() && !TeamUtil.onSameTeam(chests.get(below), player.getName())) {
+	    if (chests.get(below) != player.getName()
+		    && !teamManager.areFriendly(chests.get(below),
+			    player.getName())) {
 		e.setCancelled(true);
 		String owner = chests.get(below);
 		player.sendMessage(ChatColor.GOLD + "You can't block " + owner
@@ -95,8 +99,8 @@ public class ChestLocker implements Listener {
 	    Block chest = (Block) e.getInventory().getHolder();
 	    Player player = (Player) e.getPlayer();
 	    String owner = chests.get(chest);
-	    if (!TeamUtil.onSameTeam(owner, player.getName()))
-		    return;
+	    if (!teamManager.areFriendly(owner, player.getName()))
+		return;
 	    if (owner != player.getName()) {
 		e.setCancelled(true);
 		(player).sendMessage(ChatColor.GOLD

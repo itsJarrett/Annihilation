@@ -5,6 +5,8 @@ commands:
   annihilation:
     description: Plugin commands for Annihilation
     aliases: anni
+  team:
+    description: Team command for Annihilation
   unlock:
     description: Unlocks your locked chest
   vote:
