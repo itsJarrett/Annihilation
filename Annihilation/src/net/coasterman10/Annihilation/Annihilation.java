@@ -3,9 +3,12 @@ package net.coasterman10.Annihilation;
 import net.coasterman10.Annihilation.commands.AnnihilationCommand;
 import net.coasterman10.Annihilation.maps.MapManager;
 import net.coasterman10.Annihilation.maps.VotingManager;
+import net.coasterman10.Annihilation.teams.Team;
 import net.coasterman10.Annihilation.teams.TeamManager;
 
+import org.bukkit.Location;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Annihilation extends JavaPlugin {
@@ -53,7 +56,12 @@ public final class Annihilation extends JavaPlugin {
     }
 
     public void startGame() {
-
+	for (Team t : teams.getTeams()) {
+	    for (Player p : t.getPlayers()) {
+		Location spawn = maps.getSpawnPoint(t.getName());
+		p.teleport(spawn);
+	    }
+	}
     }
 
     public void advancePhase() {
