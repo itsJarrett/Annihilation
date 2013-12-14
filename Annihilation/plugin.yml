@@ -1,5 +1,6 @@
 name: Annihilation
 main: net.coasterman10.Annihilation.Annihilation
+authors: [coasterman10, stuntguy3000]
 version: 1.0
 commands:
   annihilation:
@@ -7,7 +8,10 @@ commands:
     aliases: anni
   team:
     description: Team command for Annihilation
+    aliases: t
   unlock:
     description: Unlocks your locked chest
+    aliases: ul
   vote:
     description: Places vote for a map
+    aliases: v
