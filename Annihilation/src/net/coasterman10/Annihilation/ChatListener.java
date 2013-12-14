@@ -10,7 +10,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class ChatListener implements Listener {
     private final TeamManager teamManager;
-    private final Annihilation plugin;;
+    private final Annihilation plugin;
 
     public ChatListener(Annihilation plugin, TeamManager teamManager) {
 	plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -49,12 +49,16 @@ public class ChatListener implements Listener {
 	e.setFormat(group + " " + WHITE + username + WHITE + ": " + message);
 
 	// HA HA HA HA HA!!!!!
-	if (message.equals("NEXUS"))
+	if (message.equalsIgnoreCase("NEXUS")) {
+		e.setCancelled(true);
 	    plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 		public void run() {
 		    e.getPlayer().getWorld()
 			    .strikeLightning(e.getPlayer().getLocation());
+		    e.getPlayer().sendMessage(
+		    		ChatColor.DARK_RED + "Instead of shouting at your team, why don't you go defend?");
 		}
 	    });
+	}
     }
 }

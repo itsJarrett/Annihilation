@@ -119,7 +119,7 @@ public class Shop implements Listener {
 
     private void openShop(Player player) {
 	int size = 9 * (int) Math.ceil(items.size() / 9.0);
-	Inventory shopInv = Bukkit.getServer().createInventory(null, size,
+	Inventory shopInv = Bukkit.getServer().createInventory(player, size,
 		name + " Shop");
 	for (int i = 0; i < items.size(); i++) {
 	    ShopItem item = items.get(i);
