@@ -59,12 +59,12 @@ public class TeamCommand implements CommandExecutor {
 		+ ChatColor.DARK_AQUA + "Teams" + ChatColor.GRAY
 		+ " ]============");
 	for (Team t : teamManager.getTeams()) {
-	    if (t.getSize() > 1) {
-	    	sender.sendMessage(t.getFullName() + " - " + t.getSize()
-	    		    + " players");
+	    if (t.getSize() != 1) {
+		sender.sendMessage(t.getFullName() + " - " + t.getSize()
+			+ " players");
 	    } else {
-	    	sender.sendMessage(t.getFullName() + " - " + t.getSize()
-	    		    + " player");
+		sender.sendMessage(t.getFullName() + " - " + t.getSize()
+			+ " player");
 	    }
 	}
 	sender.sendMessage(ChatColor.GRAY + "===============================");
