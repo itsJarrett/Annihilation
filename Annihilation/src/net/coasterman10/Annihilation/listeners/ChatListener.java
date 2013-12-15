@@ -1,5 +1,6 @@
-package net.coasterman10.Annihilation;
+package net.coasterman10.Annihilation.listeners;
 
+import net.coasterman10.Annihilation.Annihilation;
 import net.coasterman10.Annihilation.teams.Team;
 import net.coasterman10.Annihilation.teams.TeamManager;
 

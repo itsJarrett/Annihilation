@@ -14,10 +14,10 @@ public class TeamCommand implements CommandExecutor {
     private final Annihilation plugin;
     private final TeamManager teamManager;
 
-    public TeamCommand(Annihilation plugin) {
+    public TeamCommand(Annihilation plugin, TeamManager teamManager) {
 	plugin.getCommand("team").setExecutor(this);
 	this.plugin = plugin;
-	teamManager = plugin.getTeamManager();
+	this.teamManager = teamManager;
     }
 
     @Override

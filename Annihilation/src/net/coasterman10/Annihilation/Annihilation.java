@@ -1,6 +1,9 @@
 package net.coasterman10.Annihilation;
 
 import net.coasterman10.Annihilation.commands.AnnihilationCommand;
+import net.coasterman10.Annihilation.listeners.ChatListener;
+import net.coasterman10.Annihilation.listeners.PlayerListener;
+import net.coasterman10.Annihilation.listeners.WorldListener;
 import net.coasterman10.Annihilation.maps.MapManager;
 import net.coasterman10.Annihilation.maps.VotingManager;
 import net.coasterman10.Annihilation.teams.Team;
@@ -35,6 +38,7 @@ public final class Annihilation extends JavaPlugin {
 	new ChestLocker(this);
 	new ChatListener(this);
 	new PlayerListener(this);
+	new WorldListener(this);
 
 	Configuration config = configManager.getConfig("config.yml");
 	timer = new PhaseTimer(this, config);
