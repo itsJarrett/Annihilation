@@ -3,8 +3,10 @@ package net.coasterman10.Annihilation.listeners;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import net.coasterman10.Annihilation.Annihilation;
+import net.coasterman10.Annihilation.maps.GameMap;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -76,11 +78,15 @@ public class ResourceListener implements Listener {
 			rand.nextInt(5) - 3, 0));
 		ItemStack bones = new ItemStack(Material.BONE, Math.max(
 			rand.nextInt(4) - 2, 0));
-		player.getInventory().addItem(arrows, flint, feathers, string,
-			bones);
+		ItemStack[] stacks = new ItemStack[] { arrows, flint, feathers,
+			string, bones };
+		for (ItemStack stack : stacks)
+		    if (stack.getAmount() > 0)
+			player.getInventory().addItem(stack);
 	    } else {
 		int qty = 1;
-		if (material.equals(Material.REDSTONE_ORE)) {
+		if (material.equals(Material.REDSTONE_ORE)
+			|| material.equals(Material.GLOWING_REDSTONE_ORE)) {
 		    qty = 4 + (new Random().nextBoolean() ? 1 : 0);
 		}
 		if (material.equals(Material.MELON_BLOCK)) {
@@ -91,8 +97,9 @@ public class ResourceListener implements Listener {
 	    }
 	    e.setCancelled(true);
 	    player.giveExp(resources.get(material).xp);
-	    player.playSound(player.getLocation(), Sound.ORB_PICKUP, 1.0F,
-		    (new Random().nextFloat() * 0.2F) + 0.9F);
+	    if (resources.get(material).xp > 0)
+		player.playSound(player.getLocation(), Sound.ORB_PICKUP, 1.0F,
+			(new Random().nextFloat() * 0.2F) + 0.9F);
 	    queueRespawn(material, e.getBlock());
 	} else if (queue.contains(e.getBlock().getLocation())) {
 	    e.setCancelled(true);
@@ -103,6 +110,28 @@ public class ResourceListener implements Listener {
     public void placeResource(BlockPlaceEvent e) {
 	if (resources.containsKey(e.getBlock().getType())) {
 	    e.setCancelled(true);
+	}
+    }
+
+    public void queueDiamondSpawn() {
+	GameMap map = plugin.getMapManager().getCurrentMap();
+	if (map == null)
+	    return;
+
+	Set<Location> diamondLocations = map.getDiamondLocations();
+	for (Location loc : diamondLocations) {
+	    final Block block = loc.getBlock();
+	    if (block.getType().equals(Material.DIAMOND_ORE)) {
+		block.setType(Material.AIR);
+		queue.add(block.getLocation());
+		plugin.getServer().getScheduler()
+			.runTaskLater(plugin, new Runnable() {
+			    public void run() {
+				block.setType(Material.DIAMOND_ORE);
+				queue.remove(block.getLocation());
+			    }
+			}, 2 * plugin.getPhaseDelay() * 20L);
+	    }
 	}
     }
 

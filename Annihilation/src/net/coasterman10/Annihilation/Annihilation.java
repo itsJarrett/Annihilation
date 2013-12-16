@@ -20,15 +20,15 @@ public final class Annihilation extends JavaPlugin {
     private VotingManager voting;
     private MapManager maps;
     private TeamManager teams;
-
     private PhaseTimer timer;
+    private ResourceListener resources;
 
     @Override
     public void onEnable() {
 	configManager = new ConfigManager(this);
 	configManager.loadConfigFiles("config.yml", "maps.yml", "shops.yml");
 
-	maps = new MapManager(getLogger(), configManager.getConfig("maps.yml"));
+	maps = new MapManager(this, configManager.getConfig("maps.yml"));
 	teams = new TeamManager(this);
 
 	Configuration shops = configManager.getConfig("shops.yml");
@@ -40,16 +40,18 @@ public final class Annihilation extends JavaPlugin {
 	new ChatListener(this);
 	new PlayerListener(this);
 	new WorldListener(this);
-	new ResourceListener(this);
+	resources = new ResourceListener(this);
 
 	Configuration config = configManager.getConfig("config.yml");
 	timer = new PhaseTimer(this, config);
 	voting = new VotingManager(this);
+	
+	voting.setCurrentForPlayers(getServer().getOnlinePlayers());
     }
 
     @Override
     public void onDisable() {
-
+	
     }
 
     public boolean startTimer() {
@@ -69,6 +71,8 @@ public final class Annihilation extends JavaPlugin {
 		p.teleport(spawn);
 	    }
 	}
+
+	resources.queueDiamondSpawn();
     }
 
     public void advancePhase() {
@@ -94,8 +98,12 @@ public final class Annihilation extends JavaPlugin {
     public TeamManager getTeamManager() {
 	return teams;
     }
-    
+
     public MapManager getMapManager() {
 	return maps;
+    }
+
+    public int getPhaseDelay() {
+	return configManager.getConfig("config.yml").getInt("phase-period");
     }
 }

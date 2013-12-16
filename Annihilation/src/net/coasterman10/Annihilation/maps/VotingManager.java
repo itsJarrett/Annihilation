@@ -25,9 +25,9 @@ public class VotingManager implements Listener {
 	statBoard = new StatBoard(plugin.getServer().getScoreboardManager());
 	statBoard.setTitle(title);
 
-	for (GameMap map : plugin.getMapManager().getRandomMaps()) {
-	    maps.add(map.getName());
-	    statBoard.setScore(map.getName(), 0);
+	for (String map : plugin.getMapManager().getRandomMaps()) {
+	    maps.add(map);
+	    statBoard.setScore(map, 0);
 	}
     }
 

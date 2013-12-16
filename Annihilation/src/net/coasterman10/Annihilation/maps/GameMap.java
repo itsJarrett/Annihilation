@@ -1,13 +1,14 @@
 package net.coasterman10.Annihilation.maps;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
-import net.coasterman10.Annihilation.BadConfigException;
+import net.coasterman10.Annihilation.maps.MapLoader;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -16,99 +17,137 @@ import org.bukkit.WorldCreator;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class GameMap {
-    private final String name;
-    private final World world;
-    private final Map<String, List<Location>> spawnPoints = new HashMap<String, List<Location>>();
-    private final Map<String, Location> nexusLocations = new HashMap<String, Location>();
+    private World world;
+    private Map<String, List<Location>> spawns;
+    private Map<String, Location> nexuses;
+    private Set<Location> diamonds;
+    private MapLoader mapLoader;
+    private ConfigurationSection config;
 
-    public GameMap(ConfigurationSection config) throws BadConfigException {
-	name = config.getName();
+    private static final String[] teams = { "red", "yellow", "green", "blue" };
 
-	WorldCreator wc = new WorldCreator(name);
+    public GameMap(MapLoader mapLoader) {
+	spawns = new HashMap<String, List<Location>>();
+	nexuses = new HashMap<String, Location>();
+	this.mapLoader = mapLoader;
+    }
+
+    public boolean loadIntoGame(ConfigurationSection config, String worldName) {
+	if (config == null)
+	    return false;
+	
+	mapLoader.loadMap(worldName);
+	
+	WorldCreator wc = new WorldCreator(worldName);
 	wc.generator(new VoidGenerator());
 	world = Bukkit.createWorld(wc);
+	
+	if (!loadConfig())
+	    return false;
+	
+	return true;
+    }
 
-	ConfigurationSection spawnConfig = config
-		.getConfigurationSection("spawns");
-	ConfigurationSection nexusConfig = config
+    private boolean loadConfig() {
+	ConfigurationSection spawns = config.getConfigurationSection("spawns");
+	ConfigurationSection nexuses = config
 		.getConfigurationSection("nexuses");
+	if (spawns == null || nexuses == null)
+	    return false;
+	if (!loadSpawns() || !loadNexuses())
+	    return false;
+	
+	loadDiamondLocations();
 
+	return true;
+    }
+
+    private boolean loadSpawns() {
+	ConfigurationSection spawnConfig = config.getConfigurationSection("spawns");
 	if (spawnConfig == null)
-	    throw new BadConfigException(
-		    "Missing configuration section for spawns");
+	    return false;
+	
+	for (String team : teams) {
+	    if (spawnConfig.contains(team)) {
+		List<String> spawnStrings = spawnConfig.getStringList(team);
+		List<Location> spawnLocations = new ArrayList<Location>();
+		for (String spawn : spawnStrings) {
+		    Location loc = parseLocation(spawn);
+		    if (loc != null)
+			spawnLocations.add(loc);
+		}
+		if (spawnLocations.isEmpty())
+		    return false;
+		spawns.put(team, spawnLocations);
+	    } else
+		return false;
+	}
+	return true;
+    }
+
+    private boolean loadNexuses() {
+	ConfigurationSection nexusConfig = config.getConfigurationSection("nexuses");
 	if (nexusConfig == null)
-	    throw new BadConfigException(
-		    "Missing configuration section for nexuses");
-
-	for (String team : Arrays.asList("red", "yellow", "green", "blue")) {
-	    if (!spawnConfig.contains(team))
-		throw new BadConfigException("Missing spawn points for " + team
-			+ " team");
-	    if (!nexusConfig.contains(team))
-		throw new BadConfigException("Missing nexus data for " + team
-			+ " team");
-
-	    List<Location> spawns = new ArrayList<Location>();
-	    for (String spawn : spawnConfig.getStringList(team)) {
-		Location loc = parseSpawnLocation(spawn);
+	    return false;
+	
+	for (String team : teams) {
+	    if (nexusConfig.contains(team)) {
+		Location loc = parseLocation(nexusConfig.getString(team));
 		if (loc != null)
-		    spawns.add(loc);
-	    }
-	    if (!spawns.isEmpty())
-		spawnPoints.put(team, spawns);
-	    else
-		throw new BadConfigException("Invalid configuration for "
-			+ team + " spawns");
-
-	    Location nexus = parseLocation(nexusConfig.getString(team));
-	    if (nexus != null)
-		nexusLocations.put(team, nexus);
-	    else
-		throw new BadConfigException("Invalid configuration for "
-			+ team + " nexus");
+		    nexuses.put(team, loc);
+		else
+		    return false;
+	    } else
+		return false;
+	}
+	return true;
+    }
+    
+    private void loadDiamondLocations() {
+	if (diamonds == null)
+	    diamonds = new HashSet<Location>();
+	
+	for (String s : config.getStringList("diamonds")) {
+	    Location loc = parseLocation(s);
+	    if (loc != null)
+		diamonds.add(loc);
 	}
     }
 
     public Location getSpawnPoint(String team) {
-	List<Location> spawns = spawnPoints.get(team);
-	if (spawns == null)
-	    return world.getSpawnLocation();
-	else {
-	    Location loc = spawns.get(new Random().nextInt(spawns.size()));
-	    loc.setY(world.getHighestBlockYAt(loc));
-	    return loc;
-	}
+	List<Location> spawnList = spawns.get(team);
+	return spawnList.get(new Random().nextInt(spawnList.size() - 1));
     }
 
     public Location getNexusLocation(String team) {
-	return nexusLocations.get(team);
+	return nexuses.get(team);
     }
 
     public String getName() {
 	return world.getName();
     }
 
-    private Location parseLocation(String s) {
-	String[] params = s.split(",");
-	if (params.length >= 3) {
-	    double x = Double.valueOf(params[0]);
-	    double y = Double.valueOf(params[1]);
-	    double z = Double.valueOf(params[2]);
-	    return new Location(world, x, y, z);
-	} else
-	    return null;
+    public World getWorld() {
+	return world;
     }
 
-    private Location parseSpawnLocation(String s) {
-	Location loc = parseLocation(s);
-	if (loc != null) {
-	    String[] params = s.split(",");
-	    if (params.length >= 5) {
-		loc.setYaw(Float.valueOf(params[3]));
-		loc.setPitch(Float.valueOf(params[4]));
+    private Location parseLocation(String in) {
+	String[] params = in.split(",");
+	if (params.length == 3 || params.length == 5) {
+	    double x = Double.parseDouble(params[0]);
+	    double y = Double.parseDouble(params[1]);
+	    double z = Double.parseDouble(params[2]);
+	    Location loc = new Location(world, x, y, z);
+	    if (params.length == 5) {
+		loc.setYaw(Float.parseFloat(params[4]));
+		loc.setPitch(Float.parseFloat(params[5]));
 	    }
 	    return loc;
-	} else
-	    return null;
+	}
+	return null;
+    }
+
+    public Set<Location> getDiamondLocations() {
+	return diamonds;
     }
 }

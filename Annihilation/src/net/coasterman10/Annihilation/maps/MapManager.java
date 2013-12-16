@@ -1,52 +1,59 @@
 package net.coasterman10.Annihilation.maps;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
 
-import net.coasterman10.Annihilation.BadConfigException;
+import net.coasterman10.Annihilation.Annihilation;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.WorldCreator;
 import org.bukkit.configuration.Configuration;
 
 public class MapManager {
-    private final Logger log;
-    private final Map<String, GameMap> maps = new HashMap<String, GameMap>();
-    private final LobbyMap lobby;
-    private String currentMap;
+    private final ArrayList<String> maps = new ArrayList<String>();
+    private GameMap currentMap = null;
+    private Location lobbySpawn;
+    private MapLoader mapLoader;
+    private Configuration config;
 
-    public MapManager(Logger log, Configuration config) {
-	this.log = log;
-	for (String name : config.getKeys(false)) {
-	    if (name.equalsIgnoreCase("lobby"))
-		continue;
-	    try {
-		GameMap map = new GameMap(config.getConfigurationSection(name));
-		maps.put(name, map);
-		log.info("Added map " + name);
-	    } catch (BadConfigException e) {
-		log.warning("Could not add map " + name
-			+ " due to bad configuration");
-		e.printStackTrace();
-	    }
+    public MapManager(Annihilation plugin, Configuration config) {
+	mapLoader = new MapLoader(plugin.getLogger(), plugin.getDataFolder());
+	this.config = config;
+
+	for (String s : config.getKeys(false)) {
+	    maps.add(s);
 	}
-	lobby = new LobbyMap(config.getConfigurationSection("lobby"));
+	
+	WorldCreator wc = new WorldCreator("lobby");
+	wc.generator(new VoidGenerator());
+	Bukkit.createWorld(wc);
+
+	lobbySpawn = parseLocation(config.getString("lobby.spawn"));
+    }
+
+    private Location parseLocation(String in) {
+	String[] params = in.split(",");
+	if (params.length == 3 || params.length == 5) {
+	    double x = Double.parseDouble(params[0]);
+	    double y = Double.parseDouble(params[1]);
+	    double z = Double.parseDouble(params[2]);
+	    Location loc = new Location(Bukkit.getWorld("lobby"), x, y, z);
+	    if (params.length == 5) {
+		loc.setYaw(Float.parseFloat(params[4]));
+		loc.setPitch(Float.parseFloat(params[5]));
+	    }
+	    return loc;
+	}
+	return null;
     }
 
     public boolean selectMap(String mapName) {
-	if (maps.containsKey(mapName)) {
-	    currentMap = mapName;
-	    Bukkit.broadcastMessage(ChatColor.GREEN + "Selected map " + mapName);
-	    return true;
-	} else {
-	    log.severe("Unable to select map " + mapName);
-	    return false;
-	}
+	currentMap = new GameMap(mapLoader);
+	return currentMap.loadIntoGame(config.getConfigurationSection(mapName),
+		mapName);
     }
 
     public boolean mapSelected() {
@@ -54,11 +61,7 @@ public class MapManager {
     }
 
     public GameMap getCurrentMap() {
-	return maps.get(currentMap);
-    }
-
-    public LobbyMap getLobbyMap() {
-	return lobby;
+	return currentMap;
     }
 
     public Location getSpawnPoint(String team) {
@@ -66,15 +69,15 @@ public class MapManager {
     }
 
     public Location getNexus(String team) {
-	return maps.get(currentMap).getNexusLocation(team);
+	return currentMap.getNexusLocation(team);
     }
 
     public Location getLobbySpawnPoint() {
-	return lobby.getSpawnPoint();
+	return lobbySpawn;
     }
 
-    public List<GameMap> getRandomMaps() {
-	List<GameMap> shuffledMaps = new LinkedList<GameMap>(maps.values());
+    public List<String> getRandomMaps() {
+	LinkedList<String> shuffledMaps = new LinkedList<String>(maps);
 	Collections.shuffle(shuffledMaps);
 	return shuffledMaps.subList(0, Math.min(3, shuffledMaps.size()));
     }
