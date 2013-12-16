@@ -1,13 +1,17 @@
 package net.coasterman10.Annihilation.listeners;
 
+import java.io.IOException;
+
 import net.coasterman10.Annihilation.Annihilation;
 import net.coasterman10.Annihilation.maps.MapManager;
+import net.coasterman10.Annihilation.stats.StatType;
 import net.coasterman10.Annihilation.teams.Team;
 import net.coasterman10.Annihilation.teams.TeamManager;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
@@ -45,5 +49,24 @@ public class PlayerListener implements Listener {
 	} else {
 	    player.teleport(mapManager.getSpawnPoint(team.getName()));
 	}
+    }
+    
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent e) {
+      Player p = e.getEntity();
+      
+      try {
+      plugin.getStatsManager().setValue(StatType.DEATHS, p, plugin.getStatsManager().getStat(StatType.DEATHS, p) + 1);
+    } catch (IOException e1) {
+      e1.printStackTrace();
+    }
+      
+      if (p.getKiller() != null) {
+        try {
+          plugin.getStatsManager().setValue(StatType.KILLS, p.getKiller(), plugin.getStatsManager().getStat(StatType.DEATHS, p.getKiller()) + 1);
+        } catch (IOException e1) {
+          e1.printStackTrace();
+        }
+      }
     }
 }

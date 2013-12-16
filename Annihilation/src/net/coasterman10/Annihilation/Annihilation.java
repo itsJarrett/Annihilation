@@ -7,6 +7,7 @@ import net.coasterman10.Annihilation.listeners.ResourceListener;
 import net.coasterman10.Annihilation.listeners.WorldListener;
 import net.coasterman10.Annihilation.maps.MapManager;
 import net.coasterman10.Annihilation.maps.VotingManager;
+import net.coasterman10.Annihilation.stats.StatsManager;
 import net.coasterman10.Annihilation.teams.Team;
 import net.coasterman10.Annihilation.teams.TeamManager;
 
@@ -22,7 +23,8 @@ public final class Annihilation extends JavaPlugin {
     private TeamManager teams;
     private PhaseTimer timer;
     private ResourceListener resources;
-
+    private StatsManager stats;
+    
     @Override
     public void onEnable() {
 	configManager = new ConfigManager(this);
@@ -40,6 +42,7 @@ public final class Annihilation extends JavaPlugin {
 	new ChatListener(this);
 	new PlayerListener(this);
 	new WorldListener(this);
+	stats = new StatsManager(this);
 	resources = new ResourceListener(this);
 
 	Configuration config = configManager.getConfig("config.yml");
@@ -105,8 +108,16 @@ public final class Annihilation extends JavaPlugin {
     public MapManager getMapManager() {
 	return maps;
     }
+    
+    public ConfigManager getConfigManager() {
+    return configManager;
+    }
 
+    public StatsManager getStatsManager() {
+	return stats;
+    }
+    
     public int getPhaseDelay() {
-	return configManager.getConfig("config.yml").getInt("phase-period");
+    return configManager.getConfig("config.yml").getInt("phase-period");
     }
 }
