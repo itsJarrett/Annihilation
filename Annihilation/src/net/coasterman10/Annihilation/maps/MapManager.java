@@ -24,9 +24,10 @@ public class MapManager {
 	this.config = config;
 
 	for (String s : config.getKeys(false)) {
-	    maps.add(s);
+	    if (!s.equalsIgnoreCase("lobby"))
+		maps.add(s);
 	}
-	
+
 	WorldCreator wc = new WorldCreator("lobby");
 	wc.generator(new VoidGenerator());
 	Bukkit.createWorld(wc);
@@ -42,8 +43,8 @@ public class MapManager {
 	    double z = Double.parseDouble(params[2]);
 	    Location loc = new Location(Bukkit.getWorld("lobby"), x, y, z);
 	    if (params.length == 5) {
-		loc.setYaw(Float.parseFloat(params[4]));
-		loc.setPitch(Float.parseFloat(params[5]));
+		loc.setYaw(Float.parseFloat(params[3]));
+		loc.setPitch(Float.parseFloat(params[4]));
 	    }
 	    return loc;
 	}
@@ -51,9 +52,9 @@ public class MapManager {
     }
 
     public boolean selectMap(String mapName) {
-	currentMap = new GameMap(mapLoader);
-	return currentMap.loadIntoGame(config.getConfigurationSection(mapName),
-		mapName);
+	currentMap = new GameMap(mapLoader,
+		config.getConfigurationSection(mapName));
+	return currentMap.loadIntoGame(mapName);
     }
 
     public boolean mapSelected() {

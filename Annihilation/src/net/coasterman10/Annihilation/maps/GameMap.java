@@ -1,11 +1,11 @@
 package net.coasterman10.Annihilation.maps;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import net.coasterman10.Annihilation.maps.MapLoader;
@@ -26,25 +26,26 @@ public class GameMap {
 
     private static final String[] teams = { "red", "yellow", "green", "blue" };
 
-    public GameMap(MapLoader mapLoader) {
+    public GameMap(MapLoader mapLoader, ConfigurationSection config) {
 	spawns = new HashMap<String, List<Location>>();
 	nexuses = new HashMap<String, Location>();
 	this.mapLoader = mapLoader;
+	this.config = config;
     }
 
-    public boolean loadIntoGame(ConfigurationSection config, String worldName) {
+    public boolean loadIntoGame(String worldName) {
 	if (config == null)
 	    return false;
-	
+
 	mapLoader.loadMap(worldName);
-	
+
 	WorldCreator wc = new WorldCreator(worldName);
 	wc.generator(new VoidGenerator());
 	world = Bukkit.createWorld(wc);
-	
+
 	if (!loadConfig())
 	    return false;
-	
+
 	return true;
     }
 
@@ -56,17 +57,18 @@ public class GameMap {
 	    return false;
 	if (!loadSpawns() || !loadNexuses())
 	    return false;
-	
+
 	loadDiamondLocations();
 
 	return true;
     }
 
     private boolean loadSpawns() {
-	ConfigurationSection spawnConfig = config.getConfigurationSection("spawns");
+	ConfigurationSection spawnConfig = config
+		.getConfigurationSection("spawns");
 	if (spawnConfig == null)
 	    return false;
-	
+
 	for (String team : teams) {
 	    if (spawnConfig.contains(team)) {
 		List<String> spawnStrings = spawnConfig.getStringList(team);
@@ -86,10 +88,11 @@ public class GameMap {
     }
 
     private boolean loadNexuses() {
-	ConfigurationSection nexusConfig = config.getConfigurationSection("nexuses");
+	ConfigurationSection nexusConfig = config
+		.getConfigurationSection("nexuses");
 	if (nexusConfig == null)
 	    return false;
-	
+
 	for (String team : teams) {
 	    if (nexusConfig.contains(team)) {
 		Location loc = parseLocation(nexusConfig.getString(team));
@@ -102,11 +105,11 @@ public class GameMap {
 	}
 	return true;
     }
-    
+
     private void loadDiamondLocations() {
 	if (diamonds == null)
 	    diamonds = new HashSet<Location>();
-	
+
 	for (String s : config.getStringList("diamonds")) {
 	    Location loc = parseLocation(s);
 	    if (loc != null)
@@ -115,8 +118,9 @@ public class GameMap {
     }
 
     public Location getSpawnPoint(String team) {
-	List<Location> spawnList = spawns.get(team);
-	return spawnList.get(new Random().nextInt(spawnList.size() - 1));
+	List<Location> spawnList = new ArrayList<Location>(spawns.get(team));
+	Collections.shuffle(spawnList);
+	return spawnList.get(0);
     }
 
     public Location getNexusLocation(String team) {

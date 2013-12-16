@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class MapLoader {
@@ -25,7 +27,8 @@ public class MapLoader {
 	if (!source.exists())
 	    return false;
 
-	File destination = new File(dataFolder.getParentFile().getParentFile(), name);
+	File destination = new File(dataFolder.getParentFile().getParentFile(),
+		name);
 	try {
 	    copyFolder(source, destination);
 	    return true;
@@ -48,7 +51,8 @@ public class MapLoader {
 	    if (!existed)
 		dest.mkdir();
 
-	    String[] files = src.list();
+	    List<File> srcFiles = Arrays.asList(src.listFiles());
+	    List<File> destFiles = Arrays.asList(dest.listFiles());
 
 	    if (existed)
 		log.info("Copying folder " + src.getName()
@@ -57,10 +61,16 @@ public class MapLoader {
 		log.info("Copying folder " + src.getName() + " to "
 			+ dest.getName());
 
-	    for (String file : files) {
-		File srcFile = new File(src, file);
-		File destFile = new File(dest, file);
-		copyFolder(srcFile, destFile);
+	    for (File destFile : destFiles) {
+		if (!srcFiles.contains(destFile)) {
+		    destFile.delete();
+		    log.info("Deleted " + destFile.getName());
+		}
+	    }
+
+	    for (File srcFile : srcFiles) {
+		File destFile1 = new File(src, srcFile.getName());
+		copyFolder(srcFile, destFile1);
 	    }
 
 	    if (existed)

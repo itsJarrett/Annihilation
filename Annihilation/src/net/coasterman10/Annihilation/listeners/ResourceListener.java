@@ -119,6 +119,8 @@ public class ResourceListener implements Listener {
 	    return;
 
 	Set<Location> diamondLocations = map.getDiamondLocations();
+	if (diamondLocations == null)
+	    return;
 	for (Location loc : diamondLocations) {
 	    final Block block = loc.getBlock();
 	    if (block.getType().equals(Material.DIAMOND_ORE)) {

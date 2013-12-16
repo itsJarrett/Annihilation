@@ -83,7 +83,10 @@ public final class Annihilation extends JavaPlugin {
 	long time = timer.getTime();
 
 	if (time == -5L) {
-	    maps.selectMap(voting.getWinner());
+	    if (maps.selectMap(voting.getWinner()))
+		getServer().broadcastMessage(voting.getWinner() + " selected, loading...");
+	    else
+		getServer().broadcastMessage("Could not load " + voting.getWinner());
 	    voting.end();
 	}
 
