@@ -17,107 +17,109 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Annihilation extends JavaPlugin {
-    private ConfigManager configManager;
-    private VotingManager voting;
-    private MapManager maps;
-    private TeamManager teams;
-    private PhaseTimer timer;
-    private ResourceListener resources;
-    private StatsManager stats;
-    
-    @Override
-    public void onEnable() {
-	configManager = new ConfigManager(this);
-	configManager.loadConfigFiles("config.yml", "maps.yml", "shops.yml");
+	private ConfigManager configManager;
+	private VotingManager voting;
+	private MapManager maps;
+	private TeamManager teams;
+	private PhaseTimer timer;
+	private ResourceListener resources;
+	private StatsManager stats;
 
-	maps = new MapManager(this, configManager.getConfig("maps.yml"));
-	teams = new TeamManager(this);
+	@Override
+	public void onEnable() {
+		configManager = new ConfigManager(this);
+		configManager.loadConfigFiles("config.yml", "maps.yml", "shops.yml");
 
-	Configuration shops = configManager.getConfig("shops.yml");
-	new Shop(this, "Weapon", shops);
-	new Shop(this, "Brewing", shops);
+		maps = new MapManager(this, configManager.getConfig("maps.yml"));
+		teams = new TeamManager(this);
 
-	new AnnihilationCommand(this);
-	new ChestLocker(this);
-	new ChatListener(this);
-	new PlayerListener(this);
-	new WorldListener(this);
-	stats = new StatsManager(this);
-	resources = new ResourceListener(this);
+		Configuration shops = configManager.getConfig("shops.yml");
+		new Shop(this, "Weapon", shops);
+		new Shop(this, "Brewing", shops);
 
-	Configuration config = configManager.getConfig("config.yml");
-	timer = new PhaseTimer(this, config);
-	voting = new VotingManager(this);
-	
-	voting.setCurrentForPlayers(getServer().getOnlinePlayers());
-    }
+		new AnnihilationCommand(this);
+		new ChestLocker(this);
+		new ChatListener(this);
+		new PlayerListener(this);
+		new WorldListener(this);
+		stats = new StatsManager(this);
+		resources = new ResourceListener(this);
 
-    @Override
-    public void onDisable() {
-	
-    }
+		Configuration config = configManager.getConfig("config.yml");
+		timer = new PhaseTimer(this, config);
+		voting = new VotingManager(this);
 
-    public boolean startTimer() {
-	if (timer.isRunning())
-	    return false;
-
-	timer.start();
-	voting.setCurrentForPlayers(getServer().getOnlinePlayers());
-
-	return true;
-    }
-
-    public void startGame() {
-	for (Team t : teams.getTeams()) {
-	    for (Player p : t.getPlayers()) {
-		Location spawn = maps.getSpawnPoint(t.getName());
-		p.teleport(spawn);
-	    }
+		voting.setCurrentForPlayers(getServer().getOnlinePlayers());
 	}
 
-	resources.queueDiamondSpawn();
-    }
+	@Override
+	public void onDisable() {
 
-    public void advancePhase() {
-
-    }
-
-    public void onSecond() {
-	long time = timer.getTime();
-
-	if (time == -5L) {
-	    if (maps.selectMap(voting.getWinner()))
-		getServer().broadcastMessage(voting.getWinner() + " selected, loading...");
-	    else
-		getServer().broadcastMessage("Could not load " + voting.getWinner());
-	    voting.end();
 	}
 
-	if (time == 0L)
-	    startGame();
-    }
+	public boolean startTimer() {
+		if (timer.isRunning())
+			return false;
 
-    public int getPhase() {
-	return timer.getPhase();
-    }
+		timer.start();
+		voting.setCurrentForPlayers(getServer().getOnlinePlayers());
 
-    public TeamManager getTeamManager() {
-	return teams;
-    }
+		return true;
+	}
 
-    public MapManager getMapManager() {
-	return maps;
-    }
-    
-    public ConfigManager getConfigManager() {
-    return configManager;
-    }
+	public void startGame() {
+		for (Team t : teams.getTeams()) {
+			for (Player p : t.getPlayers()) {
+				Location spawn = maps.getSpawnPoint(t.getName());
+				p.teleport(spawn);
+			}
+		}
 
-    public StatsManager getStatsManager() {
-	return stats;
-    }
-    
-    public int getPhaseDelay() {
-    return configManager.getConfig("config.yml").getInt("phase-period");
-    }
+		resources.queueDiamondSpawn();
+	}
+
+	public void advancePhase() {
+
+	}
+
+	public void onSecond() {
+		long time = timer.getTime();
+
+		if (time == -5L) {
+			if (maps.selectMap(voting.getWinner()))
+				getServer().broadcastMessage(
+						voting.getWinner() + " selected, loading...");
+			else
+				getServer().broadcastMessage(
+						"Could not load " + voting.getWinner());
+			voting.end();
+		}
+
+		if (time == 0L)
+			startGame();
+	}
+
+	public int getPhase() {
+		return timer.getPhase();
+	}
+
+	public TeamManager getTeamManager() {
+		return teams;
+	}
+
+	public MapManager getMapManager() {
+		return maps;
+	}
+
+	public ConfigManager getConfigManager() {
+		return configManager;
+	}
+
+	public StatsManager getStatsManager() {
+		return stats;
+	}
+
+	public int getPhaseDelay() {
+		return configManager.getConfig("config.yml").getInt("phase-period");
+	}
 }

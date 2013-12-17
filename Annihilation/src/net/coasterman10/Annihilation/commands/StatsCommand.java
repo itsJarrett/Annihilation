@@ -8,7 +8,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class StatsCommand implements CommandExecutor {
-
 	private Annihilation plugin;
 	
 	public StatsCommand(Annihilation instance) {
