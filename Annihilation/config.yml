@@ -1,3 +1,9 @@
 start-delay: 120
 phase-period: 600
 stats: flatfile
+MySQL:
+    port: 3306
+    user: mc_
+    pass: mc_
+    host: localhost
+    name: mc_

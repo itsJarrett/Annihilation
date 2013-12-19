@@ -1,5 +1,7 @@
 package net.coasterman10.Annihilation;
 
+import java.util.logging.Level;
+
 import net.coasterman10.Annihilation.commands.AnnihilationCommand;
 import net.coasterman10.Annihilation.listeners.ChatListener;
 import net.coasterman10.Annihilation.listeners.PlayerListener;
@@ -7,10 +9,12 @@ import net.coasterman10.Annihilation.listeners.ResourceListener;
 import net.coasterman10.Annihilation.listeners.WorldListener;
 import net.coasterman10.Annihilation.maps.MapManager;
 import net.coasterman10.Annihilation.maps.VotingManager;
+import net.coasterman10.Annihilation.stats.DatabaseHandler;
 import net.coasterman10.Annihilation.stats.StatsManager;
 import net.coasterman10.Annihilation.teams.Team;
 import net.coasterman10.Annihilation.teams.TeamManager;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
@@ -24,7 +28,9 @@ public final class Annihilation extends JavaPlugin {
 	private PhaseTimer timer;
 	private ResourceListener resources;
 	private StatsManager stats;
-
+	private DatabaseHandler db;
+	public Boolean useMysql = false;
+	
 	@Override
 	public void onEnable() {
 		configManager = new ConfigManager(this);
@@ -44,12 +50,23 @@ public final class Annihilation extends JavaPlugin {
 		new WorldListener(this);
 		stats = new StatsManager(this);
 		resources = new ResourceListener(this);
-
+		
 		Configuration config = configManager.getConfig("config.yml");
 		timer = new PhaseTimer(this, config);
 		voting = new VotingManager(this);
 
 		voting.setCurrentForPlayers(getServer().getOnlinePlayers());
+		
+		if (useMysql) {
+			db = new DatabaseHandler(this.getConfig().getString("MySQL.host"),
+					this.getConfig().getInt("MySQL.port"),
+					this.getConfig().getString("MySQL.name"),
+					this.getConfig().getString("MySQL.user"),
+					this.getConfig().getString("MySQL.pass"),
+					this);
+			
+			db.query("CREATE TABLE IF NOT EXISTS `annihilation` ( `username` varchar(16) NOT NULL, `kills` int(16) NOT NULL, `deaths` int(16) NOT NULL, `wins` int(16) NOT NULL, `losses` int(16) NOT NULL, `nexus_damage` int(16) NOT NULL, UNIQUE KEY `username` (`username`) ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+		} else db = new DatabaseHandler(this);
 	}
 
 	public boolean startTimer() {
@@ -113,8 +130,16 @@ public final class Annihilation extends JavaPlugin {
 	public StatsManager getStatsManager() {
 		return stats;
 	}
+	
+	public DatabaseHandler getDatabaseHandler() {
+		return db;
+	}
 
 	public int getPhaseDelay() {
 		return configManager.getConfig("config.yml").getInt("phase-period");
+	}
+
+	public void log(String m, Level l) {
+		Bukkit.getLogger().log(l, m);
 	}
 }

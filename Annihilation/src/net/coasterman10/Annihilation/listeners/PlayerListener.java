@@ -49,6 +49,11 @@ public class PlayerListener implements Listener {
 			player.teleport(mapManager.getLobbySpawnPoint());
 		else
 			player.teleport(mapManager.getSpawnPoint(team.getName()));
+		
+		if (plugin.useMysql) {
+			plugin.getDatabaseHandler().query("INSERT IGNORE INTO `annihilation` (`username`, `kills`, `deaths`, `wins`, `losses`, `nexus_damage`) VALUES "
+					+ "('" + player.getName() + "', '0', '0', '0', '0', '0');");
+		}
 	}
 
 	@EventHandler
