@@ -52,11 +52,6 @@ public final class Annihilation extends JavaPlugin {
 		voting.setCurrentForPlayers(getServer().getOnlinePlayers());
 	}
 
-	@Override
-	public void onDisable() {
-
-	}
-
 	public boolean startTimer() {
 		if (timer.isRunning())
 			return false;

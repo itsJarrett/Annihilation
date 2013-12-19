@@ -2,7 +2,6 @@ package net.coasterman10.Annihilation.commands;
 
 import net.coasterman10.Annihilation.maps.VotingManager;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,8 +24,8 @@ public class VoteCommand implements CommandExecutor {
     }
 
     private void listMaps(CommandSender sender) {
-	sender.sendMessage(ChatColor.GRAY + "Maps up for voting:");
+	sender.sendMessage("§bMaps up for voting:");
 	for (String map : manager.getMaps())
-	    sender.sendMessage(ChatColor.GRAY + "- " + map);
+	    sender.sendMessage(" §8- §7" + map);
     }
 }
