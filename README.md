@@ -7,7 +7,7 @@ Do you own a server where you need a minigame that means more? Are you a server 
  **Current Annihilation Features**
   *  (Features To Be Listed...)
 
- **Developers** 
+ *Developers* 
   * coasterman10
   * stuntguy3000
 
