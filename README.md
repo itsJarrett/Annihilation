@@ -4,9 +4,6 @@ Do you own a server where you need a minigame that means more? Are you a server 
 
  **Simple Description**: A opensource replica of the ShotBow Network's game, Annihilation. 
 
- **Current Annihilation Features**:
- *  (Features To Be Listed...)
-
  **Developers**: coasterman10, stuntguy3000
 
 * **Current Version**: v1.0 IN-DEV
